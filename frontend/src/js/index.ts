@@ -17,6 +17,8 @@ const bootFront =  () => {
                 `<div class="appended">${name}</div>`
             )
         );
+
+        console.log(`There is : ${$.class("appended").length}`);
     };
 };
 

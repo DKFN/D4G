@@ -2,6 +2,10 @@
 
 # Build the whole stack via Docker
 
-Clone the repository then run `docker build -t d4g .` in the root directory
+Clone the repository then run `docker build -t d4g .` in the root directory.
+
+After the first build (wich may be slow) you can do 
+`docker run -p 80:8080 dkfn/d4g:dev ` and then you will have the front at `http://localhost/`
 
 ## Build only some parts
+Will be written later, maybe during D4G :P 
