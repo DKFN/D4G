@@ -1,6 +1,6 @@
 extern crate env_logger;
 use actix_files as fs;
-use actix_web::{App, HttpServer};
+use actix_web::{App, HttpServer, middleware};
 
 pub fn main() {
     let splash = "
@@ -17,7 +17,9 @@ pub fn main() {
     std::env::set_var("RUST_LOG", "actix_web=debug");
     env_logger::init();
     HttpServer::new(|| {
-        App::new().service(
+        App::new()
+            .wrap(middleware::Compress::default())
+            .service(
             // This folder will be created on docker build
             fs::Files::new("/", "./public/front/").index_file("index.html")
         )

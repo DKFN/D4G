@@ -23,10 +23,20 @@ COPY ./backend/src ./backend/src
 RUN rm ./backend/target/release/deps/backend*
 RUN cd backend && cargo build --release
 
+# This stage allows us to compile all static assets in one file
+FROM ubuntu as eipOptimizer
+RUN apt update
+RUN apt install -y curl
+RUN curl http://cdn.infra.tetel.in/d4g-skunkworks/bin/EIP --output /EIP
+RUN chmod +x /EIP
+COPY --from=frontend ./frontend/dist/ /fatfront
+RUN /EIP /fatfront /
+
 ## Final image
 FROM ubuntu
 RUN mkdir /public
 RUN mkdir /public/front
 COPY --from=backend ./backend/target/release/backend /
-COPY --from=frontend ./frontend/dist/ /public/front
+COPY --from=eipOptimizer /index.html /public/front
+# COPY --from=frontend ./frontend/dist/ /public/front
 CMD ["/backend"]
