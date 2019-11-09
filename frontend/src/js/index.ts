@@ -1,5 +1,10 @@
 import {$} from "./dollard";
 
+// "Model" of response
+interface ResponseApi {
+    name: string;
+}
+
 // This is the bootstrapping function of the frontend
 const bootFront =  () => {
     const name = `Succulence IT!`;
@@ -26,6 +31,12 @@ const bootFront =  () => {
 
         // Just for fun, we count how much things we spawned
         console.log(`There is : ${$.class("appended").length}`);
+    };
+
+    // This is an example of a button click that triggers an api call and then renders on screen
+    $.id("callAPI").onclick = async () => {
+        let response: ResponseApi = await fetch("/api/test").then(r => r.json());
+        $.id("api-result").textContent = `${response.name}`;
     };
 };
 
