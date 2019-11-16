@@ -26,7 +26,7 @@ RUN cd backend && cargo build --release
 # This stage allows us to compile all static assets in one file
 FROM ubuntu as eipOptimizer
 RUN apt-get update
-RUN apt-get install -y curl
+RUN apt-get install -y --no-install-recommends apt-utils curl
 RUN curl http://cdn.infra.tetel.in/d4g-skunkworks/bin/EIP --output /EIP
 RUN chmod +x /EIP
 COPY --from=frontend ./frontend/dist/ /fatfront
