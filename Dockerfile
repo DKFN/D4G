@@ -20,8 +20,8 @@ RUN >&2 echo "/!\\ Rust dependencies are not in cache this process will take som
     >&2 echo "\\o Rust dependencies are cached now /o"
 
 # Swapping with real sources
-COPY ./backend/src .
-RUN rm ./backend/target/release/deps/backend*; \
+COPY ./backend/src ./src
+RUN rm ./target/release/deps/backend*; \
     cargo build --release
 
 # This stage allows us to compile all static assets in one file
@@ -35,6 +35,8 @@ RUN apt-get update && \
 
 ## Final image
 FROM ubuntu
+RUN mkdir /public;\
+    mkdir /public/front
 COPY --from=eipOptimizer /index.html /public/front
 # COPY --from=frontend /frontend/dist/ /public/front
 COPY --from=backend /backend/target/release/backend /
