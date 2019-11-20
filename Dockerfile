@@ -1,9 +1,10 @@
 ## Frontend
 FROM node:12 AS frontend
 WORKDIR /frontend
+COPY ./frontend/package* ./
+RUN npm install --verbose
 COPY ./frontend/ .
-RUN npm install --verbose && \
-    npm run build --production
+RUN npm run build --production
 
 ## Backend
 FROM rustlang/rust:nightly AS backend
@@ -26,12 +27,12 @@ RUN rm ./target/release/deps/backend*; \
 
 # This stage allows us to compile all static assets in one file
 FROM ubuntu as eipOptimizer
-COPY --from=frontend /frontend/dist/ /fatfront
 RUN apt-get update && \
     apt-get install -y --no-install-recommends apt-utils curl && \
     curl http://cdn.infra.tetel.in/d4g-skunkworks/bin/EIP --output /EIP && \
-    chmod +x /EIP && \
-    /EIP /fatfront /
+    chmod +x /EIP
+COPY --from=frontend /frontend/dist/ /fatfront
+RUN /EIP /fatfront /
 
 ## Final image
 FROM ubuntu
@@ -40,5 +41,7 @@ RUN mkdir /public;\
 COPY --from=eipOptimizer /index.html /public/front
 # COPY --from=frontend /frontend/dist/ /public/front
 COPY --from=backend /backend/target/release/backend /
+
+# This stage will copy all sources in its own zip for release
 
 ENTRYPOINT [ "/backend" ]
