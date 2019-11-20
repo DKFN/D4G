@@ -17,8 +17,6 @@ const bootFront = () => {
     );
     return false;
   };
-  Backend.login("toto", "tata");
-  Backend.login("cacahuete44", "wxRKsjRGzwOph");
 };
 
 // It is important to use all functions inside it to avoid possible missing an HTMLElement because the script was invoked before the page is done painting
