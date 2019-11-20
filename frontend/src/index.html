@@ -1,25 +1,37 @@
 <!DOCTYPE html>
 <html>
     <head>
+        <meta charset="UTF-8">
         <!-- EIP tags are illegal but stripped from production to give better inline perf !-->
-        <EIP-CSS><link rel="stylesheet" href="./css/milligram.css"></EIP-CSS>
+        <!--<EIP-CSS><link rel="stylesheet" href="./css/milligram.css"></EIP-CSS>-->
+        <EIP-CSS><link rel="stylesheet" href="./css/normalize.css">
+        <link rel="stylesheet" href="./css/milligram.css">
+        <link rel="stylesheet" href="./css/main.css"></EIP-CSS>
+        <meta name="viewport"
+              content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+        <meta http-equiv="X-UA-Compatible" content="ie=edge">
+
         <!-- This hack avoids the browser to send a favicon request !-->
         <link rel="icon" href="data:;base64,iVBORw0KGgo=">
     </head>
     <body>
-    <h1 id="superTest">
-        Design 4 green supa shiet
-    </h1>
-    <button id="superButton">
-        Click on me
-    </button>
-    <button class="superButton2">
-        Click on me v2
-    </button>
-    <button id="callAPI">
-        Call API
-    </button>
-    <h5>API RESULT : <span id="api-result"></span></h5>
+    <main class="backgrounded" id="page-login">
+        <div class="row pad-lg-top">
+            <div class="column column-80 column-offset-10 box bg-white min-h-lg">
+                <h2>Connexion</h2>
+                <form action="#">
+                    <fieldset>
+                        <label for="login">Identifiant de connexion</label>
+                        <input type="text" placeholder="Identifiant de connexion" id="login">
+                        <label for="password">Mot de passe</label>
+                        <input type="password" placeholder="Mot de passe" id="password">
+                        <button class="button" id="btn-login">Connexion</button>
+                        <a class="button button-clear">Mot de passe oublié</a>
+                    </fieldset>
+                </form>
+            </div>
+        </div>
+    </main>
     <EIP-JS><script src="./js/index.ts"></script></EIP-JS>
     </body>
 </html>
