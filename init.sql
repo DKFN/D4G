@@ -19,18 +19,14 @@ SET default_tablespace = '';
 
 SET default_with_oids = false;
 
---
--- Name: locataire; Type: TABLE; Schema: public; Owner: d4g
---
+\c postgres;
 
-CREATE TABLE public.locataire (
-    foyer character varying(16) NOT NULL,
-    nom character varying(128) NOT NULL,
-    prenom character varying(128) NOT NULL
-);
+DROP DATABASE IF EXISTS d4g;
 
+CREATE DATABASE d4g;
+ALTER DATABASE d4g OWNER TO d4g;
 
-ALTER TABLE public.locataire OWNER TO d4g;
+\c d4g;
 
 --
 -- Name: logement; Type: TABLE; Schema: public; Owner: d4g
@@ -43,7 +39,7 @@ CREATE TABLE public.logement (
     nb_pieces smallint NOT NULL,
     chauffage character varying(16) NOT NULL,
     date_construction smallint NOT NULL,
-    n_voie smallint NOT NULL,
+    n_voie character varying(8) NOT NULL,
     voie1 character varying(254) NOT NULL,
     code_postal character varying(5) NOT NULL,
     ville character varying(128) NOT NULL
@@ -68,11 +64,24 @@ CREATE TABLE public.proprietaire (
 ALTER TABLE public.proprietaire OWNER TO d4g;
 
 --
+-- Name: locataire; Type: TABLE; Schema: public; Owner: d4g
+--
+
+CREATE TABLE public.locataire (
+    foyer character varying(16) NOT NULL,
+    nom character varying(128) NOT NULL,
+    prenom character varying(128) NOT NULL
+);
+
+
+ALTER TABLE public.locataire OWNER TO d4g;
+
+--
 -- Name: releve; Type: TABLE; Schema: public; Owner: d4g
 --
 
 CREATE TABLE public.releve (
-    date date NOT NULL,
+    date character varying(10) NOT NULL,
     foyer character varying(16) NOT NULL,
     valeur integer NOT NULL
 );
@@ -205,7 +214,8 @@ ALTER TABLE ONLY public.releve
 ALTER TABLE ONLY public.utilisateur
     ADD CONSTRAINT logement_utilisateur_fk FOREIGN KEY (foyer) REFERENCES public.logement(foyer) ON UPDATE CASCADE ON DELETE CASCADE;
 
-
+ALTER TABLE ONLY public.utilisateur
+    ALTER COLUMN active SET DEFAULT TRUE;
 --
 -- PostgreSQL database dump complete
 --
