@@ -3,8 +3,11 @@
 # This script will be used to kick production
 # For now it assumes a docker machine with access to the private repo
 #
-
-docker pull dkfn/d4g:dev
+# PROD
+# docker pull dkfn/d4g:dev
+# DEV
+docker build -t dkfn/d4g:dev .
+# END DEV
 docker logs backend > old_run.txt || true
 docker stop backend || true
 docker rm -f backend || true
