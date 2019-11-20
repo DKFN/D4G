@@ -8,6 +8,14 @@ use actix_web::{HttpRequest, HttpResponse};
 use actix_web_actors::ws;
 use actix;
 use actix::{StreamHandler, Actor};
+use json::JsonValue;
+use serde_json::Value;
+
+#[derive(Deserialize, Serialize)]
+pub struct SocketMessage {
+    topic: String,
+    data: Value
+}
 
 // "Model" Json et Database
 #[derive(Deserialize, Serialize)]
@@ -50,6 +58,8 @@ impl StreamHandler<ws::Message, ws::ProtocolError> for Ws {
             },
             ws::Message::Text(text) => {
                 println!("{}", text);
+                let response: SocketMessage = serde_json::from_str(&text).unwrap();
+                println!("{}", response.topic);
                 ctx.text(text)
             },
             ws::Message::Binary(bin) => ctx.binary(bin),
