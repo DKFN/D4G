@@ -12,11 +12,20 @@ use actix::{StreamHandler, Actor};
 use postgres::{Connection, TlsMode};
 use json::JsonValue;
 use serde_json::Value;
+use crate::controllers::index;
+
+mod controllers;
 
 #[derive(Deserialize, Serialize)]
 pub struct SocketMessage {
     topic: String,
     data: Value
+}
+
+#[derive(Deserialize, Serialize)]
+pub struct LoginQuery {
+    login: String,
+    password: String
 }
 
 // "Model" Json et Database
@@ -78,10 +87,7 @@ pub fn greet() -> Result<Json<Vec<ModelDeFou>>
 }
 
 // autre controlleur :)
-pub fn index() -> Result<NamedFile, actix_web::Error> {
-    let path = "./public/front/index.html";
-    Ok(NamedFile::open(path)?)
-}
+
 
 
 
@@ -109,6 +115,11 @@ impl StreamHandler<ws::Message, ws::ProtocolError> for Ws {
                 println!("{}", text);
                 let response: SocketMessage = serde_json::from_str(&text).unwrap();
                 println!("{}", response.topic);
+                if (response.topic == "try-login") {
+                    let data = response.data.to_string();
+                    println!("DATA: {}", data);
+                    let response: LoginQuery = serde_json::from_str(&data).unwrap();
+                }
                 ctx.text(text)
             },
             ws::Message::Binary(bin) => ctx.binary(bin),
