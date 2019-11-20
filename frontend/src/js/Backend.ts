@@ -48,6 +48,19 @@ class Backend {
     }));
   }
 
+  createUser(locataire, proprietaire, user) {
+    this.send(
+      JSON.stringify({
+        topic: "create-user",
+        data: {
+          locataire,
+          proprietaire,
+          user
+        }
+      })
+    );
+  }
+
   send(message: string): void {
     if (this.socket && this.socket.readyState) {
       this.socket.send(message);
