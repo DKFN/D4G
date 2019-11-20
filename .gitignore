@@ -4,3 +4,4 @@ frontend/.cache
 frontend/dist
 backend/target
 *.iml
+/old_run.txt
