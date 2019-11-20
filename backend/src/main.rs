@@ -1,10 +1,7 @@
 extern crate env_logger;
 #[macro_use] extern crate serde_derive;
-use actix_files as fs;
 use actix_web::{App, HttpServer, middleware, web};
 use actix_files::NamedFile;
-use json::JsonValue;
-use serde_json::json;
 use actix_web::web::Json;
 use actix_web::middleware::Logger;
 
@@ -54,4 +51,3 @@ pub fn main() {
         .run()
         .unwrap();
 }
-
