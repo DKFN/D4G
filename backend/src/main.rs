@@ -1,4 +1,5 @@
 extern crate env_logger;
+extern crate postgres;
 #[macro_use] extern crate serde_derive;
 use actix_web::{App, HttpServer, middleware, web};
 use actix_files::NamedFile;
@@ -8,6 +9,7 @@ use actix_web::{HttpRequest, HttpResponse};
 use actix_web_actors::ws;
 use actix;
 use actix::{StreamHandler, Actor};
+use postgres::{Connection, TlsMode};
 
 // "Model" Json et Database
 #[derive(Deserialize, Serialize)]
@@ -15,9 +17,56 @@ pub struct ModelDeFou {
     name: String,
 }
 
+pub struct Logement {
+    foyer: String,
+    l_type: i32,
+    surface: String,
+    chauffage : String,
+    date_construction: i32,
+    n_voie: String,
+    voie1: String,
+    code_postal: String,
+    ville: String,
+    proprietaire: Proprietaire,
+    locataire: Locataire,
+    releves: Vec<Releve>,
+}
+
+pub struct Proprietaire {
+    nom: String,
+    prenom: String,
+    societe: String,
+    adresse: String
+}
+
+pub struct Locataire {
+    nom: String,
+    prenom: String,
+}
+
+pub struct Releve {
+    date: String,
+    valeur: String,
+}
+
+pub struct Utilisateur {
+    login: String,
+    password: String,
+    active: bool,
+    foyer: Logement,
+}
+
 // "Controlleur"
-pub fn greet() -> Result<Json<ModelDeFou>, actix_web::Error> {
-    Ok(Json(ModelDeFou { name: "COUCOU".to_string() }))
+pub fn greet() -> Result<Json<Vec<ModelDeFou>>
+    , actix_web::Error> {
+    let conn = Connection::connect("postgresql://d4g:Design4Green@localhost:5432", TlsMode::None).unwrap();
+    let mut ret: Vec<ModelDeFou> = vec![];
+    for row in &conn.query("SELECT foyer, login, password FROM utilisateur", &[]).unwrap() {
+        ret.push(ModelDeFou {
+            name : row.get(1),
+        });
+    };
+    Ok(Json(ret))
 }
 
 // autre controlleur :)
