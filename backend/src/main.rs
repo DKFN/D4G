@@ -4,6 +4,10 @@ use actix_web::{App, HttpServer, middleware, web};
 use actix_files::NamedFile;
 use actix_web::web::Json;
 use actix_web::middleware::Logger;
+use actix_web::{HttpRequest, HttpResponse};
+use actix_web_actors::ws;
+use actix;
+use actix::{StreamHandler, Actor};
 
 // "Model" Json et Database
 #[derive(Deserialize, Serialize)]
@@ -20,6 +24,32 @@ pub fn greet() -> Result<Json<ModelDeFou>, actix_web::Error> {
 pub fn index() -> Result<NamedFile, actix_web::Error> {
     let path = "./public/front/index.html";
     Ok(NamedFile::open(path)?)
+}
+
+
+
+// do websocket handshake and start actor
+fn ws_index(req: HttpRequest, stream: web::Payload) -> Result<HttpResponse, actix_web::Error> {
+    ws::start(Ws, &req,  stream)
+}
+
+struct Ws;
+
+impl Actor for Ws {
+    type Context = ws::WebsocketContext<Self>;
+}
+
+// Handler for ws::Message messages
+impl StreamHandler<ws::Message, ws::ProtocolError> for Ws {
+
+    fn handle(&mut self, msg: ws::Message, ctx: &mut Self::Context) {
+        match msg {
+            ws::Message::Ping(msg) => ctx.pong(&msg),
+            ws::Message::Text(text) => ctx.text(text),
+            ws::Message::Binary(bin) => ctx.binary(bin),
+            _ => (),
+        }
+    }
 }
 
 pub fn main() {
@@ -43,6 +73,7 @@ pub fn main() {
         App::new()
             .wrap(middleware::Compress::default())
             .route("/", web::get().to(index))
+            .route("/socket", web::get().to(ws_index))
             .route("/api/test", web::get().to(greet))
             .wrap(Logger::default())
     })
