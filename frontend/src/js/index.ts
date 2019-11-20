@@ -1,5 +1,6 @@
 import { $ } from "./dollard";
 import Backend from "./Backend";
+import backend from "./Backend";
 
 // "Model" of response
 interface ResponseApi {
@@ -36,6 +37,8 @@ const bootFront = () => {
     let response: ResponseApi = await fetch("/api/test").then(r => r.json());
     $.id("api-result").textContent = `${response.name}`;
   };
+  Backend.login("toto", "tata");
+  Backend.login("cacahuete44", "wxRKsjRGzwOph");
 };
 
 // It is important to use all functions inside it to avoid possible missing an HTMLElement because the script was invoked before the page is done painting

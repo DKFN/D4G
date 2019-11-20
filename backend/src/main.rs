@@ -12,9 +12,11 @@ use actix::{StreamHandler, Actor};
 use postgres::{Connection, TlsMode};
 use json::JsonValue;
 use serde_json::Value;
-use crate::controllers::index;
+use crate::controllers::{index, login};
+use serde_json::json;
 
 mod controllers;
+mod model;
 
 #[derive(Deserialize, Serialize)]
 pub struct SocketMessage {
@@ -34,60 +36,14 @@ pub struct ModelDeFou {
     name: String,
 }
 
-pub struct Logement {
-    foyer: String,
-    l_type: i32,
-    surface: String,
-    chauffage : String,
-    date_construction: i32,
-    n_voie: String,
-    voie1: String,
-    code_postal: String,
-    ville: String,
-    proprietaire: Proprietaire,
-    locataire: Locataire,
-    releves: Vec<Releve>,
-}
 
-pub struct Proprietaire {
-    nom: String,
-    prenom: String,
-    societe: String,
-    adresse: String
-}
-
-pub struct Locataire {
-    nom: String,
-    prenom: String,
-}
-
-pub struct Releve {
-    date: String,
-    valeur: String,
-}
-
-pub struct Utilisateur {
-    login: String,
-    password: String,
-    active: bool,
-    foyer: Logement,
-}
 
 // "Controlleur"
-pub fn greet() -> Result<Json<Vec<ModelDeFou>>
-    , actix_web::Error> {
-    let conn = Connection::connect("postgresql://d4g:Design4Green@localhost:5432", TlsMode::None).unwrap();
-    let mut ret: Vec<ModelDeFou> = vec![];
-    for row in &conn.query("SELECT foyer, login, password FROM utilisateur", &[]).unwrap() {
-        ret.push(ModelDeFou {
-            name : row.get(1),
-        });
-    };
-    Ok(Json(ret))
+pub fn greet() -> Result<Json<ModelDeFou>, actix_web::Error> {
+    Ok(Json(ModelDeFou { name: "COUCOU".to_string()}))
 }
 
 // autre controlleur :)
-
 
 
 
@@ -119,6 +75,10 @@ impl StreamHandler<ws::Message, ws::ProtocolError> for Ws {
                     let data = response.data.to_string();
                     println!("DATA: {}", data);
                     let response: LoginQuery = serde_json::from_str(&data).unwrap();
+                    let result = login(response);
+                    ctx.text(json!({
+                        "topic": if result { "ok-login" } else { "ko-login" }
+                    }).to_string());
                 }
                 ctx.text(text)
             },
