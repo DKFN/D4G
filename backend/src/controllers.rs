@@ -13,22 +13,22 @@ pub fn connect_ddb() -> Connection{
 
 pub fn login(query:LoginQuery) -> bool {
     let conn = connect_ddb();
-    let rows = !conn.prepare("SELECT active, foyer FROM utilisateur where login=$1 AND password=$2").unwrap()
+    let rows = conn.prepare("SELECT active, foyer FROM utilisateur where login=$1 AND password=$2").unwrap()
         .query(&[&query.login, &query.password]).unwrap();
-    println!("login correct : {}", res);
     if !rows.is_empty() {
-        if rows.get(0) {
-            let infos = conn.prepare("select l.foyer from logement l where l.foyer = $1;").unwrap()
-                .query(&[rows.get(2)]).unwrap();
-            infos.iter().for_each(|r| -> () {
-                let maybe_foyer: Option<String> = r.get(0);
-                println!("infos du logement :{}", maybe_foyer.unwrap_or_default());
-            });
-
+        let row = rows.get(0);
+        let active : bool = row.get(0);
+        if active {
+            let foyer : String = row.get(1);
+            let logement = conn.prepare("select type, surface, nb_piece, chauffage, date_construction, n_voie, voie1, code_postal, ville from logement l where l.foyer = $1;").unwrap()
+                .query(&[&foyer]).unwrap();
+            let locataire = conn.prepare("select nom, prenom from locataire l where l.foyer = $1;").unwrap()
+                .query(&[&foyer]).unwrap();
+            let proprietaire = conn.prepare("select nom, prenom, societe, adresse from proprietaire p where p.foyer = $1;").unwrap()
+                .query(&[&foyer]).unwrap();
             let releves = conn.prepare("select date, valeur from releve where foyer = $1").unwrap()
-                .query(&rows.get(2)).unwrap();
+                .query(&[&foyer]).unwrap();
 
-            println!("infos du logement :{}", releves);
         } //else {
         //TODO gerer le fait que le compte soit non actif
         //}
