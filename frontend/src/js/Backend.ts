@@ -26,6 +26,16 @@ class Backend {
 
   onmessage(event: MessageEvent): void {
     console.log(event);
+
+    const json = JSON.parse(event.data);
+    switch (json.topic) {
+      case "test":
+        console.warn("test", json.data);
+        break;
+
+      default:
+        console.warn("default", json);
+    }
   }
 
   send(message: string): void {
@@ -36,6 +46,5 @@ class Backend {
 };
 
 const backend = new Backend();
-backend.initialize();
 
 export default backend;

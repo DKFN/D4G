@@ -42,5 +42,16 @@ const bootFront = () => {
 
 // It is important to use all functions inside it to avoid possible missing an HTMLElement because the script was invoked before the page is done painting
 document.addEventListener("DOMContentLoaded", () => {
+  Backend.initialize();
+
+  let pid = setInterval(() => {
+      if (Backend.socket.readyState === WebSocket.OPEN) {
+        console.log("OPENED CONNECTION OK");
+        clearInterval(pid);
+        bootFront();
+      } else {
+        console.warn("Waiting for connection");
+      }
+  }, 50);
   bootFront();
 });
