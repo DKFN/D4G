@@ -1,18 +1,10 @@
 
 
-export default class Backend {
-  static _instance: Backend = null;
-
-  static get instance() {
-    return Backend._instance || new Backend();
-  }
-
+class Backend {
   socket: WebSocket = null;
 
-  Socket() {
-    Backend._instance = this;
-
-    this.socket = new WebSocket(`ws://${window.location.hostname}/socket`);
+  initialize() {
+    this.socket = new WebSocket(`ws://${window.location.host}/socket`);
 
     this.socket.onclose = this.onclose;
     this.socket.onerror = this.onerror;
@@ -42,3 +34,8 @@ export default class Backend {
     }
   }
 };
+
+const backend = new Backend();
+backend.initialize();
+
+export default backend;

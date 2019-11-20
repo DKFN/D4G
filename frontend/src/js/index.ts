@@ -37,7 +37,7 @@ const bootFront = () => {
     $.id("api-result").textContent = `${response.name}`;
   };
 
-  Backend.instance.send("coucou");
+  Backend.send("Tata");
 };
 
 // It is important to use all functions inside it to avoid possible missing an HTMLElement because the script was invoked before the page is done painting
