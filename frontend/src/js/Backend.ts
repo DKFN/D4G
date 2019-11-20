@@ -48,10 +48,10 @@ class Backend {
     }));
   }
 
-  createUser(locataire, proprietaire, user) {
+  register(locataire, proprietaire, user) {
     this.send(
       JSON.stringify({
-        topic: "create-user",
+        topic: "register",
         data: {
           locataire,
           proprietaire,
