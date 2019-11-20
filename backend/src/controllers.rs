@@ -13,7 +13,26 @@ pub fn connect_ddb() -> Connection{
 
 pub fn login(query:LoginQuery) -> bool {
     let conn = connect_ddb();
-    let res = !conn.prepare("SELECT active FROM utilisateur where login=$1 AND password=$2").unwrap()
-        .query(&[&query.login, &query.password]).unwrap().is_empty();
-    res
+    let rows = !conn.prepare("SELECT active, foyer FROM utilisateur where login=$1 AND password=$2").unwrap()
+        .query(&[&query.login, &query.password]).unwrap();
+    println!("login correct : {}", res);
+    if !rows.is_empty() {
+        if rows.get(0) {
+            let infos = conn.prepare("select l.foyer from logement l where l.foyer = $1;").unwrap()
+                .query(&[rows.get(2)]).unwrap();
+            infos.iter().for_each(|r| -> () {
+                let maybe_foyer: Option<String> = r.get(0);
+                println!("infos du logement :{}", maybe_foyer.unwrap_or_default());
+            });
+
+            let releves = conn.prepare("select date, valeur from releve where foyer = $1").unwrap()
+                .query(&rows.get(2)).unwrap();
+
+            println!("infos du logement :{}", releves);
+        } //else {
+        //TODO gerer le fait que le compte soit non actif
+        //}
+
+    }
+    true
 }
