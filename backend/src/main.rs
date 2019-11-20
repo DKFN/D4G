@@ -2,18 +2,14 @@ extern crate env_logger;
 extern crate postgres;
 #[macro_use] extern crate serde_derive;
 use actix_web::{App, HttpServer, middleware, web};
-use actix_files::NamedFile;
 use actix_web::web::Json;
 use actix_web::middleware::Logger;
 use actix_web::{HttpRequest, HttpResponse};
 use actix_web_actors::ws;
 use actix;
 use actix::{StreamHandler, Actor};
-use postgres::{Connection, TlsMode};
-use json::JsonValue;
 use serde_json::Value;
 use crate::controllers::{index, login};
-use serde_json::json;
 
 mod controllers;
 mod model;
@@ -71,7 +67,7 @@ impl StreamHandler<ws::Message, ws::ProtocolError> for Ws {
                 println!("{}", text);
                 let response: SocketMessage = serde_json::from_str(&text).unwrap();
                 println!("{}", response.topic);
-                if (response.topic == "try-login") {
+                if response.topic == "try-login" {
                     let data = response.data.to_string();
                     println!("DATA: {}", data);
                     let response: LoginQuery = serde_json::from_str(&data).unwrap();

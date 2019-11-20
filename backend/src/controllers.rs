@@ -1,5 +1,5 @@
 use actix_files::NamedFile;
-use crate::{model, LoginQuery};
+use crate::{LoginQuery};
 use postgres::{Connection, TlsMode};
 use serde_json::Value;
 use serde_json::json;
