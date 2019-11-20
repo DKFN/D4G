@@ -36,8 +36,6 @@ const bootFront = () => {
     let response: ResponseApi = await fetch("/api/test").then(r => r.json());
     $.id("api-result").textContent = `${response.name}`;
   };
-
-  Backend.send("Tata");
 };
 
 // It is important to use all functions inside it to avoid possible missing an HTMLElement because the script was invoked before the page is done painting

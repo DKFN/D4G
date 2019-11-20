@@ -38,6 +38,16 @@ class Backend {
     }
   }
 
+  login(login: string, password: string) {
+    this.send(JSON.stringify({
+      topic: "try-login",
+      data: {
+        login,
+        password
+      }
+    }));
+  }
+
   send(message: string): void {
     if (this.socket && this.socket.readyState) {
       this.socket.send(message);
