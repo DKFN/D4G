@@ -76,9 +76,7 @@ impl StreamHandler<ws::Message, ws::ProtocolError> for Ws {
                     println!("DATA: {}", data);
                     let response: LoginQuery = serde_json::from_str(&data).unwrap();
                     let result = login(response);
-                    ctx.text(json!({
-                        "topic": if result { "ok-login" } else { "ko-login" }
-                    }).to_string());
+                    ctx.text(result.to_string());
                 }
                 ctx.text(text)
             },

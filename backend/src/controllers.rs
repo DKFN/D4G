@@ -1,6 +1,8 @@
 use actix_files::NamedFile;
 use crate::{model, LoginQuery};
 use postgres::{Connection, TlsMode};
+use serde_json::Value;
+use serde_json::json;
 
 pub fn index() -> Result<NamedFile, actix_web::Error> {
     let path = "./public/front/index.html";
@@ -11,7 +13,13 @@ pub fn connect_ddb() -> Connection{
     Connection::connect("postgresql://d4g:Design4Green@172.17.0.3:5432", TlsMode::None).unwrap()
 }
 
-pub fn login(query:LoginQuery) -> bool {
+pub fn login(query:LoginQuery) -> Value {
+    let mut ret: Value = json!({
+            "topic": "ko-login",
+            "data": {
+                "message": "Unhandled server exception"
+            }
+        });
     let conn = connect_ddb();
     let rows = conn.prepare("SELECT active, foyer FROM utilisateur where login=$1 AND password=$2").unwrap()
         .query(&[&query.login, &query.password]).unwrap();
@@ -29,10 +37,12 @@ pub fn login(query:LoginQuery) -> bool {
             let releves = conn.prepare("select date, valeur from releve where foyer = $1").unwrap()
                 .query(&[&foyer]).unwrap();
 
-        } //else {
-        //TODO gerer le fait que le compte soit non actif
-        //}
-
-    }
-    true
+            ret = json!({"topic": "ok-login"});
+        } else {
+            ret = json!({ "topic": "ko-login", "data": { "message": "Account not validated" }});
+        }
+    } else {
+            ret = json!({ "topic": "ko-login", "data": { "message": "Username or password incorrect" }});
+        }
+    ret
 }
