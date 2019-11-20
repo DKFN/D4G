@@ -34,11 +34,11 @@ ALTER DATABASE d4g OWNER TO d4g;
 
 CREATE TABLE public.logement (
     foyer character varying(16) NOT NULL,
-    type smallint NOT NULL,
+    type integer NOT NULL,
     surface real NOT NULL,
-    nb_pieces smallint NOT NULL,
+    nb_pieces integer NOT NULL,
     chauffage character varying(16) NOT NULL,
-    date_construction smallint NOT NULL,
+    date_construction integer NOT NULL,
     n_voie character varying(8) NOT NULL,
     voie1 character varying(254) NOT NULL,
     code_postal character varying(5) NOT NULL,

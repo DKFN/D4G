@@ -3,6 +3,7 @@ use crate::{model, LoginQuery};
 use postgres::{Connection, TlsMode};
 use serde_json::Value;
 use serde_json::json;
+use crate::model::{Logement, Proprietaire, Locataire};
 
 pub fn index() -> Result<NamedFile, actix_web::Error> {
     let path = "./public/front/index.html";
@@ -27,17 +28,47 @@ pub fn login(query:LoginQuery) -> Value {
         let row = rows.get(0);
         let active : bool = row.get(0);
         if active {
-            let foyer : String = row.get(1);
-            let logement = conn.prepare("select type, surface, nb_piece, chauffage, date_construction, n_voie, voie1, code_postal, ville from logement l where l.foyer = $1;").unwrap()
-                .query(&[&foyer]).unwrap();
-            let locataire = conn.prepare("select nom, prenom from locataire l where l.foyer = $1;").unwrap()
-                .query(&[&foyer]).unwrap();
-            let proprietaire = conn.prepare("select nom, prenom, societe, adresse from proprietaire p where p.foyer = $1;").unwrap()
-                .query(&[&foyer]).unwrap();
+            let user_foyer: String = row.get(1);
+            let logements = conn.prepare("select type, surface, nb_pieces, chauffage, date_construction, n_voie, voie1, code_postal, ville from logement l where l.foyer = $1;").unwrap()
+                .query(&[&user_foyer]).unwrap();
+            let locataires = conn.prepare("select nom, prenom from locataire l where l.foyer = $1;").unwrap()
+                .query(&[&user_foyer]).unwrap();
+            let proprietaires = conn.prepare("select nom, prenom, societe, adresse from proprietaire p where p.foyer = $1;").unwrap()
+                .query(&[&user_foyer]).unwrap();
             let releves = conn.prepare("select date, valeur from releve where foyer = $1").unwrap()
-                .query(&[&foyer]).unwrap();
+                .query(&[&user_foyer]).unwrap();
 
-            ret = json!({"topic": "ok-login"});
+            let logement = logements.get(0);
+            let locataire = locataires.get(0);
+            let proprietaire = proprietaires.get(0);
+
+            let result = Logement {
+                foyer: user_foyer,
+                l_type: logement.get(0),
+                surface: logement.get(1),
+                nb_pieces: logement.get(2),
+                chauffage: logement.get(3),
+                date_construction: logement.get(4),
+                n_voie: logement.get(5),
+                voie1: logement.get(6),
+                code_postal: logement.get(7),
+                ville: logement.get(8),
+                proprietaire: Proprietaire {
+                    nom: proprietaire.get(0),
+                    prenom: proprietaire.get(1),
+                    societe: proprietaire.get(2),
+                    adresse: proprietaire.get(3),
+                },
+                locataire: Locataire {
+                    nom: locataire.get(0),
+                    prenom: locataire.get(1),
+                },
+                releves: vec![]
+            };
+            println!("{}", serde_json::to_string(&result).unwrap());
+
+
+            ret = json!({"topic": "ok-login", "data" : result});
         } else {
             ret = json!({ "topic": "ko-login", "data": { "message": "Account not validated" }});
         }

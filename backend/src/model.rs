@@ -1,38 +1,44 @@
+#[derive(Deserialize, Serialize)]
 pub struct Logement {
-    foyer: String,
-    l_type: i32,
-    surface: String,
-    chauffage : String,
-    date_construction: i32,
-    n_voie: String,
-    voie1: String,
-    code_postal: String,
-    ville: String,
-    proprietaire: Proprietaire,
-    locataire: Locataire,
-    releves: Vec<Releve>,
+    pub foyer: String,
+    pub l_type: i32,
+    pub surface: f32,
+    pub nb_pieces : i32,
+    pub chauffage : String,
+    pub date_construction: i32,
+    pub n_voie: String,
+    pub voie1: String,
+    pub code_postal: String,
+    pub ville: String,
+    pub proprietaire: Proprietaire,
+    pub locataire: Locataire,
+    pub releves: Vec<Releve>,
 }
 
+#[derive(Deserialize, Serialize)]
 pub struct Proprietaire {
-    nom: String,
-    prenom: String,
-    societe: String,
-    adresse: String
+    pub nom: Option<String>,
+    pub prenom: Option<String>,
+    pub societe: Option<String>,
+    pub adresse: Option<String>
 }
 
+#[derive(Deserialize, Serialize)]
 pub struct Locataire {
-    nom: String,
-    prenom: String,
+    pub nom: String,
+    pub prenom: String,
 }
 
+#[derive(Deserialize, Serialize)]
 pub struct Releve {
-    date: String,
-    valeur: String,
+    pub date: String,
+    pub valeur: String,
 }
 
+#[derive(Deserialize, Serialize)]
 pub struct Utilisateur {
-    login: String,
-    password: String,
-    active: bool,
-    foyer: Logement,
+    pub login: String,
+    pub password: String,
+    pub active: bool,
+    pub foyer: Logement,
 }
