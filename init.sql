@@ -81,8 +81,8 @@ ALTER TABLE public.locataire OWNER TO d4g;
 --
 
 CREATE TABLE public.releve (
-    date character varying(10) NOT NULL,
     foyer character varying(16) NOT NULL,
+    date character varying(10) NOT NULL,
     valeur integer NOT NULL
 );
 
