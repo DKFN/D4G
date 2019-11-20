@@ -23,3 +23,16 @@ main.backgrounded {
 .min-h-lg {
     min-height: 25vmin;
 }
+.message.warning {
+    background-color: #feecf0;
+    border-color: #f14668;
+    color: #cc0f35;
+}
+.message.success {
+    background-color: #effaf3;
+    border-color: #48c774;
+    color: #257942;
+}
+.message {
+    margin: .75rem auto;
+}

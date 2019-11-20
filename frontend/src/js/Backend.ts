@@ -1,4 +1,4 @@
-
+import { onLogin } from "./login";
 
 class Backend {
   socket: WebSocket = null;
@@ -32,6 +32,14 @@ class Backend {
       case "test":
         console.warn("test", json.data);
         break;
+
+      case "ko-login":
+        onLogin(json.data, false);
+        break;
+      case "ok-login":
+        onLogin(json.data, true);
+        break;
+
 
       default:
         console.warn("default", json);
