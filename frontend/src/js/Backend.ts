@@ -36,6 +36,5 @@ class Backend {
 };
 
 const backend = new Backend();
-backend.initialize();
 
 export default backend;
