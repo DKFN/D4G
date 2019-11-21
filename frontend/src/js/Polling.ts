@@ -1,11 +1,6 @@
 import Backend from './Backend';
 import { onDashboard } from './dashboard';
 
-interface Releve {
-  date: string;
-  value: string;
-}
-
 export default class Polling {
   static SEND_TIMEOUT: number = 5000;
 
