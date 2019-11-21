@@ -2,6 +2,7 @@ import { clean, bind } from "./dom";
 import { onDetails } from "./details";
 import { $ } from "./dollard";
 import Polling from "./Polling";
+import File from "./File";
 
 function onDashboard(data) {
     clean('page-dashboard-user');
@@ -14,13 +15,33 @@ function onDashboard(data) {
         'ville': data.ville || 'Non renseignée'
     });
 
+    // Open modal for add detail (releve) to a foyer
     dashboard.querySelector('[action="open-modal"]').onclick = () => {
         onDetails(dashboard, data.foyer)
+    };
+
+    // Open modal for upload file
+    dashboard.querySelector('[action="open-modal-file"]').onclick = () => {
+        uploadFileToFoyer($.id('user-dashboard-main'), data.foyer)
     };
 
     onArrayUser('table-releve-user', data);
 
     Polling.instance.send();
+}
+
+function uploadFileToFoyer(context, foyer) {
+    // Open modal
+    const modal = context.getElementsByClassName('modal')[0];
+    modal.classList.toggle('active');
+    const form = modal.getElementsByTagName('form')[0];
+    File.setInput(form.getElementsByTagName('input')[0]);
+    File.setFoyer(foyer);
+    form.getElementsByTagName('button')[0].onclick = () => {
+        console.log('I am in the handler');
+        File.upload();
+        return false;
+    };
 }
 
 function onArrayUser(tableId, data) {

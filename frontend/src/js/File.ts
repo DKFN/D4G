@@ -1,5 +1,5 @@
 class File {
-    private path: string = '/file/';
+    private path: string = 'file/';
     private foyer: string = '';
     private input: HTMLInputElement;
     private file;
@@ -10,18 +10,14 @@ class File {
 
     upload() {
         let formData = new FormData();
-        console.log(this.file);
         formData.set('file', this.file);
-        console.log('formdata: ', formData);
         const request = new XMLHttpRequest();
         request.open("POST", this.route());
-        // request.setRequestHeader("Content-Type", "multipart/form-data");
         request.send(formData);
     }
 
     route () {
-        //return 'http://localhost' + this.path + this.foyer;
-        return 'file';
+        return window.location.href + this.path + this.foyer;
     }
 
     setFoyer(foyer: string) {
