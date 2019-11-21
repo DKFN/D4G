@@ -125,7 +125,7 @@ pub fn main() {
             .route("/", web::get().to(index))
             .route("/source.zip", web::get().to(sources))
             .route("/socket", web::get().to(ws_index))
-            .route("/file", web::post().to_async(upload))
+            .route("/file/{foyer}", web::post().to_async(upload))
             .service(
                 afs::Files::new("/dl", "/public/uploads")
                     .show_files_listing()
