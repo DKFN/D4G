@@ -36,13 +36,10 @@ class Backend {
       case "ko-login":
         onLogin(json.data, false);
         break;
+
       case "ok-login":
         onLogin(json.data, true);
         break;
-
-
-      default:
-        console.warn("default", json);
     }
   }
 
