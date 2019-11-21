@@ -6,7 +6,7 @@ extern crate regex;
 
 
 use actix_files::NamedFile;
-use crate::{LoginQuery};
+use crate::{LoginQuery, ForgetPassword, InfoLogement};
 use postgres::{Connection, TlsMode};
 use serde_json::Value;
 use serde_json::json;
@@ -57,6 +57,49 @@ pub fn connect_ddb() -> Connection{
     Connection::connect("postgresql://d4g:Design4Green@172.17.0.3:5432", TlsMode::None).unwrap()
 }
 
+pub fn send_email(subject: String, mail: String, message: String) {
+
+    let address = std::env::var("SMTP_ADDRESS").unwrap_or("smtp.gmail.com".to_string());
+
+    let email = Email::builder()
+        .to(mail)
+        .from(("bot@vps753500.ovh.net", "Green Jiraration"))
+        .subject(subject)
+        .text(message)
+        .build()
+        .unwrap();
+
+    let mut tls_builder = TlsConnector::builder();
+    tls_builder.min_protocol_version(Some(Protocol::Tlsv10));
+
+    let tls_parameters = ClientTlsParameters::new(
+        address.to_string(),
+        tls_builder.build().unwrap()
+    );
+
+    let mut mailer = SmtpClient::new(
+        (address.as_str(), 465),
+        ClientSecurity::Wrapper(tls_parameters)
+    ).unwrap()
+        .authentication_mechanism(Mechanism::Login)
+        .credentials(Credentials::new(
+            std::env::var("SMTP_USERNAME").unwrap_or("user".to_string()),
+            std::env::var("SMTP_PASSWORD").unwrap_or("password".to_string())
+        ))
+        .connection_reuse(ConnectionReuseParameters::ReuseUnlimited)
+        .transport();
+
+    let result = mailer.send(email.into());
+
+    if result.is_ok() {
+        println!("Email sent");
+    } else {
+        println!("Could not send email: {:?}", result);
+    }
+
+    mailer.close();
+}
+
 pub fn register(username: String, password: String, logement: Logement) -> String {
     let conn = connect_ddb();
     let result;
@@ -73,45 +116,7 @@ pub fn register(username: String, password: String, logement: Logement) -> Strin
 
         if username_is_email {
             let domain = std::env::var("DOMAIN").unwrap_or("localhost".to_string());
-            let address = std::env::var("SMTP_ADDRESS").unwrap_or("smtp.gmail.com".to_string());
-
-            let email = Email::builder()
-                .to(username.clone())
-                .from(("bot@vps753500.ovh.net", "Green Jiraration"))
-                .subject("Hi, activate your account")
-                .text(format!("http://{}/verify/{}", domain, token))
-                .build()
-                .unwrap();
-
-            let mut tls_builder = TlsConnector::builder();
-            tls_builder.min_protocol_version(Some(Protocol::Tlsv10));
-
-            let tls_parameters = ClientTlsParameters::new(
-                address.to_string(),
-                tls_builder.build().unwrap()
-            );
-
-            let mut mailer = SmtpClient::new(
-                (address.as_str(), 465),
-                ClientSecurity::Wrapper(tls_parameters)
-            ).unwrap()
-                .authentication_mechanism(Mechanism::Login)
-                .credentials(Credentials::new(
-                    std::env::var("SMTP_USERNAME").unwrap_or("user".to_string()),
-                    std::env::var("SMTP_PASSWORD").unwrap_or("password".to_string())
-                ))
-                .connection_reuse(ConnectionReuseParameters::ReuseUnlimited)
-                .transport();
-
-            let result = mailer.send(email.into());
-
-            if result.is_ok() {
-                println!("Email sent");
-            } else {
-                println!("Could not send email: {:?}", result);
-            }
-
-            mailer.close();
+            send_email("Hi, activate your account".to_string(), username.clone(), format!("http://{}/verify/{}", domain, token))
         }
 
         let foyer = nanoid::generate(16); // We generate an id of 16 char because of database typing
@@ -206,6 +211,16 @@ pub fn retrive_logement_admin() -> Vec<Resume>{
         }
     }).collect()
 }
+
+pub fn info_logement(query: &InfoLogement) -> Logement {
+    let mut result: Logement = retrive_logement_from_foyer(&query.foyer);
+    result.releves = retrive_releves_from_foyer(&query.foyer);
+    result
+}
+
+/*pub fn forget_password(_query: &ForgetPassword) -> Value {
+    Value
+}*/
 
 
 pub fn login(query: &LoginQuery) -> (Value, bool, bool) {
