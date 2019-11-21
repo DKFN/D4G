@@ -97,7 +97,8 @@ CREATE TABLE public.utilisateur (
     foyer character varying(16) NOT NULL,
     login character varying(64) NOT NULL,
     password character varying(255) NOT NULL,
-    active boolean NOT NULL
+    active boolean NOT NULL,
+    token character varying(21)
 );
 
 
@@ -219,4 +220,3 @@ ALTER TABLE ONLY public.utilisateur
 --
 -- PostgreSQL database dump complete
 --
-

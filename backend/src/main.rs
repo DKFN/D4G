@@ -2,14 +2,14 @@ extern crate env_logger;
 extern crate postgres;
 #[macro_use] extern crate serde_derive;
 use actix_web::{App, HttpServer, middleware, web};
-use actix_web::web::Json;
 use actix_web::middleware::Logger;
 use actix_web::{HttpRequest, HttpResponse};
 use actix_web_actors::ws;
 use actix;
 use actix::{StreamHandler, Actor};
 use serde_json::Value;
-use crate::controllers::{index, login};
+use crate::controllers::{index, login, register};
+use crate::model::{Logement, Proprietaire, Locataire};
 
 mod controllers;
 mod model;
@@ -54,6 +54,32 @@ impl StreamHandler<ws::Message, ws::ProtocolError> for Ws {
                     "try-login" => {
                         let response: Value = login(serde_json::from_value(request.data).unwrap());
                         ctx.text(response.to_string());
+
+                        /*let ll = Logement {
+                            foyer: "".to_string(),
+                            l_type: 0,
+                            surface: 10.0,
+                            nb_pieces: 3,
+                            chauffage: "le chauffage".to_string(),
+                            date_construction: 1990,
+                            n_voie: "888".to_string(),
+                            voie1: "voie 1 super".to_string(),
+                            code_postal: "99850".to_string(),
+                            ville: "Poit".to_string(),
+                            proprietaire: Proprietaire {
+                                nom: Some("Super prop".to_string()),
+                                prenom: Some("kdek z".to_string()),
+                                societe: Some("lalalalla".to_string()),
+                                adresse: Some("dza daz5 d46az5 d4az5 d45z".to_string()),
+                            },
+                            locataire: Locataire {
+                                nom: "bibibi".to_string(),
+                                prenom: "rooroororo".to_string(),
+                            },
+                            releves: vec![]
+                        };
+
+                        register("eldynn@orange.fr".to_string(), "test".to_string(), ll);*/
                     },
                     _ => {} // Needed so compiler don't end up in error
                 }
