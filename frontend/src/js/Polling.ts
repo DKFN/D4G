@@ -1,4 +1,5 @@
 import Backend from './Backend';
+import { onDashboard } from './dashboard';
 
 interface Releve {
   date: string;
@@ -14,23 +15,24 @@ export default class Polling {
     return Polling._instance || new Polling();
   }
 
-  timeoutId: NodeJS.Timeout;
+  timeoutId: NodeJS.Timeout = null;
 
   Polling() {
     Polling._instance = this;
   }
 
   send() {
-    if (!this.timeoutId) {
+    if (this.timeoutId === null) {
       this.timeoutId = setTimeout(() => {
         Backend.pollData();
       }, Polling.SEND_TIMEOUT);
     }
   }
 
-  receive(releves: Array<Releve>) {
+  receive(data) {
     clearTimeout(this.timeoutId);
     this.timeoutId = null;
-    this.send();
+
+    onDashboard(data);
   }
 }
