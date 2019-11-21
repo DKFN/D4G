@@ -50,6 +50,9 @@ class Backend {
       case "ok-info":
         onDashboard(json.data);
         break;
+      case "ok-add-releve":
+        onResponseDetail(json.data);
+        break;
     }
   }
 
@@ -112,6 +115,19 @@ class Backend {
         JSON.stringify({
           topic: "info-logement",
           data: { foyer }
+        })
+    )
+  }
+
+  addDetail(foyer, date, valeur) {
+    this.send(
+        JSON.stringify({
+          topic: "add-releve",
+          data: {
+            foyer,
+            date,
+            valeur
+          }
         })
     )
   }
