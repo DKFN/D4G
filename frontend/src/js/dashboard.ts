@@ -38,4 +38,4 @@ function onArrayUser(tableId, data) {
     });
 }
 
-export { onDashboard, onDashboardAdmin };
+export { onDashboard };
