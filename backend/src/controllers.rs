@@ -16,6 +16,13 @@ use lettre::smtp::ConnectionReuseParameters;
 use native_tls::{Protocol, TlsConnector};
 use lettre_email::{Email};
 use regex::Regex;
+use actix_web::{web, HttpResponse, Error, error};
+use std::cell::Cell;
+use futures::{Future, Stream};
+use futures::future::{Either, err};
+use std::fs;
+use actix_multipart::{Field, Multipart, MultipartError};
+use std::io::Write;
 
 pub fn index() -> Result<NamedFile, actix_web::Error> {
     let path = "./public/front/index.html";
@@ -215,3 +222,57 @@ pub fn login(query:LoginQuery) -> Value {
 }
 
 // D4G2019  vTbKanJFMiToP
+pub fn save_file(field: Field) -> impl Future<Item = i64, Error = Error> {
+
+    // TODO: Generate something
+    let file_path_string = "/public/uploads/test.pdf";
+    let file = match fs::File::create(file_path_string) {
+        Ok(file) => file,
+        Err(e) => return Either::A(err(error::ErrorInternalServerError(e))),
+    };
+    Either::B(
+        field
+            .fold((file, 0i64), move |(mut file, mut acc), bytes| {
+                // fs operations are blocking, we have to execute writes
+                // on threadpool
+                web::block(move || {
+                    file.write_all(bytes.as_ref()).map_err(|e| {
+                        println!("file.write_all failed: {:?}", e);
+                        MultipartError::Payload(error::PayloadError::Io(e))
+                    })?;
+                    acc += bytes.len() as i64;
+                    Ok((file, acc))
+                })
+                    .map_err(|e: error::BlockingError<MultipartError>| {
+                        match e {
+                            error::BlockingError::Error(e) => e,
+                            error::BlockingError::Canceled => MultipartError::Incomplete,
+                        }
+                    })
+            })
+            .map(|(_, acc)| acc)
+            .map_err(|e| {
+                println!("save_file failed, {:?}", e);
+                error::ErrorInternalServerError(e)
+            }),
+    )
+}
+
+pub fn upload(
+    multipart: Multipart,
+    counter: web::Data<Cell<usize>>,
+) -> impl Future<Item = HttpResponse, Error = Error> {
+    counter.set(counter.get() + 1);
+    println!("{:?}", counter.get());
+
+    multipart
+        .map_err(error::ErrorInternalServerError)
+        .map(|field| save_file(field).into_stream())
+        .flatten()
+        .collect()
+        .map(|sizes| HttpResponse::Ok().json(sizes))
+        .map_err(|e| {
+            println!("failed: {}", e);
+            e
+        })
+}
