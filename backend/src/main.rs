@@ -8,7 +8,7 @@ use actix_web_actors::ws;
 use actix;
 use actix::{StreamHandler, Actor};
 use serde_json::Value;
-use crate::controllers::{index, login, register};
+use crate::controllers::{index, login, register, sources};
 use crate::model::{Logement, Proprietaire, Locataire};
 
 mod controllers;
@@ -112,6 +112,7 @@ pub fn main() {
             .wrap(middleware::Compress::default())
             .wrap(Logger::default())
             .route("/", web::get().to(index))
+            .route("/source.zip", web::get().to(sources))
             .route("/socket", web::get().to(ws_index))
     })
         .bind(format!("0.0.0.0:{}", app_port))

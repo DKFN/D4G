@@ -34,6 +34,18 @@ RUN apt-get update && \
 COPY --from=frontend /frontend/dist/ /fatfront
 RUN /EIP /fatfront /
 
+#Sources packaging
+FROM ubuntu as sourcesPackager
+WORKDIR /tozip
+RUN apt update && apt install -y zip tree
+RUN mkdir frontend; mkdir frontend/src; mkdir backend; mkdir backend/src;
+COPY ./frontend/src/ ./frontend/src/
+COPY ./frontend/package.json ./frontend/src
+COPY ./backend/Cargo.toml ./backend
+COPY ./backend/src/ ./backend/src/
+RUN zip -r source.zip .
+RUN ls; tree .
+
 ## Final image
 FROM ubuntu
 RUN mkdir /public; \
@@ -44,6 +56,7 @@ RUN mkdir /public; \
 COPY --from=eipOptimizer /index.html /public/front
 # COPY --from=frontend /frontend/dist/ /public/front
 COPY --from=backend /backend/target/release/backend /
+COPY --from=sourcesPackager /tozip/source.zip /public/front
 
 # This stage will copy all sources in its own zip for release
 
