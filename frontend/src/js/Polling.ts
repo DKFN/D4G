@@ -1,5 +1,7 @@
 import Backend from './Backend';
 import { onDashboard } from './dashboard';
+import { onDashboardAdmin } from './dashboard_admin';
+import { $ } from './dollard';
 
 export default class Polling {
   static SEND_TIMEOUT: number = 5000;
@@ -25,6 +27,10 @@ export default class Polling {
   }
 
   receive(data) {
-    onDashboard(data);
+    if ($.currentPage() === 'page-dashboard-user') {
+      onDashboard(data);
+    } else {
+      onDashboardAdmin(data);
+    }
   }
 }
