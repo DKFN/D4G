@@ -2,11 +2,14 @@ import {clean} from "./dom";
 import {$} from "./dollard";
 import "./Backend";
 import backend from "./Backend";
+import Polling from "./Polling";
 
 function onDashboardAdmin(data) {
     clean('page-dashboard-admin');
     localStorage.setItem('admin-data', data);
-    onArrayAdmin('table-releve-admin', data)
+    onArrayAdmin('table-releve-admin', data);
+
+    Polling.instance.send();
 }
 
 function onArrayAdmin(tableId, data) {
