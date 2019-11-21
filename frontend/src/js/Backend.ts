@@ -1,6 +1,7 @@
 import { onLogin } from "./login";
 import { onDashboard } from "./dashboard";
 import Polling from "./Polling";
+import {onResponseDetail} from "./details";
 
 class Backend {
   socket: WebSocket = null;
@@ -50,6 +51,7 @@ class Backend {
       case "ok-info":
         onDashboard(json.data);
         break;
+
       case "ok-add-releve":
         onResponseDetail(json.data);
         break;
