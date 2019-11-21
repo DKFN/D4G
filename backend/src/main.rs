@@ -9,8 +9,8 @@ use actix;
 use actix::{StreamHandler, Actor};
 use serde_json::Value;
 use serde_json::json;
-use crate::model::{Logement};
-use crate::controllers::{index, login, register, sources, upload, verify, info_logement, user_retrieve_datas_from_polling};
+use crate::model::{Logement, AddReleve};
+use crate::controllers::{index, login, register, sources, upload, verify, info_logement, user_retrieve_datas_from_polling, add_releve};
 use std::cell::Cell;
 use actix_files as afs;
 
@@ -108,6 +108,11 @@ impl StreamHandler<ws::Message, ws::ProtocolError> for Ws {
                         let data: InfoLogement = serde_json::from_value(request.data).unwrap();
                         let response: Logement = info_logement(&data);
                         ctx.text(json!({ "topic": "ok-info", "data": response}).to_string());
+                    },
+                    "add-releve" => {
+                        let data : AddReleve = serde_json::from_value(request.data).unwrap();
+                        add_releve(&data);
+                        ctx.text(json!({ "topic": "ok-add-releve", "data": { "message": "Releve ajouté avec succès"}}).to_string());
                     },
                     "poll-data" => {
                         if self.auth {

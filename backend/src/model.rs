@@ -53,3 +53,10 @@ pub struct Utilisateur {
     pub active: bool,
     pub foyer: Logement,
 }
+
+#[derive(Deserialize, Serialize)]
+pub struct AddReleve {
+    pub foyer: String,
+    pub date: String,
+    pub valeur: i32,
+}

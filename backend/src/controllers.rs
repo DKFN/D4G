@@ -10,7 +10,7 @@ use crate::{LoginQuery, ForgetPassword, InfoLogement};
 use postgres::{Connection, TlsMode};
 use serde_json::Value;
 use serde_json::json;
-use crate::model::{Logement, Proprietaire, Locataire, Releve, Resume};
+use crate::model::{Logement, Proprietaire, Locataire, Releve, Resume, AddReleve};
 use lettre::{ ClientSecurity, ClientTlsParameters, SmtpClient, Transport };
 use lettre::smtp::authentication::{Credentials, Mechanism};
 use lettre::smtp::ConnectionReuseParameters;
@@ -224,6 +224,11 @@ pub fn info_logement(query: &InfoLogement) -> Logement {
     Value
 }*/
 
+pub fn add_releve(query: &AddReleve) {
+    let conn = connect_ddb();
+    conn.prepare("INSERT INTO releve (foyer, date, valeur) VALUES ($1, $2, $3);").unwrap()
+        .query(&[&query.foyer, &query.date, &query.valeur]).unwrap();
+}
 
 pub fn login(query: &LoginQuery) -> (Value, bool, bool) {
     // TODO: Add tuple as return to have all datas to give to ctx
