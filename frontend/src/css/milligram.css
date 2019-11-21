@@ -424,7 +424,7 @@ input[type='radio'] {
   .row {
     flex-direction: row;
     margin-left: -1.0rem;
-    width: calc(100% + 2.0rem);
+    width: calc(100%);
   }
   .row .column {
     margin-bottom: inherit;
