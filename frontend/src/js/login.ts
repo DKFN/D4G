@@ -1,6 +1,25 @@
 import { $ } from "./dollard";
 import { onDashboard } from "./dashboard";
 import { onDashboardAdmin } from "./dashboard_admin"
+import {clean} from "./dom";
+import Backend from "./Backend";
+import {onForget} from "./forget";
+
+function initLogin() {
+    clean('page-login');
+    const login = $.id("btn-login");
+    login.onclick = () => {
+        Backend.login(
+            $.id('login').value,
+            $.id('password').value
+        );
+        return false;
+    };
+    const routeForget = $.id('page-login').querySelector('[to="page-forget"]');
+    routeForget.onclick = () => {
+        onForget();
+    }
+}
 
 function onLogin(data, status, admin=false) {
     const containerMessage = $.id('page-login').getElementsByClassName('message')[0];
@@ -19,4 +38,4 @@ function onLogin(data, status, admin=false) {
     }
 }
 
-export { onLogin };
+export { onLogin, initLogin };
