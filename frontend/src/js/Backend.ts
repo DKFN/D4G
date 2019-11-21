@@ -1,6 +1,7 @@
 import { onLogin } from "./login";
 import { onDashboard } from "./dashboard";
 import Polling from "./Polling";
+import { receiveForgetPassword } from "./forget";
 
 class Backend {
   socket: WebSocket = null;
@@ -35,6 +36,10 @@ class Backend {
         Polling.instance.receive(json.data);
         break;
 
+      case "forget-password":
+        receiveForgetPassword(json.data);
+        break;
+
       case "ko-login":
         onLogin(json.data, false);
         break;
@@ -64,7 +69,6 @@ class Backend {
   }
 
   forgetPassword(login: string) {
-    console.log('forget : ', login);
     this.send(JSON.stringify({
       topic: "forget-password",
       data: {

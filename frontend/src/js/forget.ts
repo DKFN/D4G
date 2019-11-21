@@ -4,6 +4,15 @@ import { $ } from "./dollard";
 
 const context = 'page-forget';
 
+function receiveForgetPassword(data) {
+    const page = $.id(context);
+    if (page) {
+        const containerMessage = page.getElementsByClassName('message')[0];
+        containerMessage.classList.add(data.error ? 'warning' : 'success');
+        containerMessage.innerHTML = `<strong>${data.error ? 'Erreur' : 'Félicitation'}</strong><br>${data.error || data.message}`;
+    }
+}
+
 function onForget() {
     clean(context);
     const page = $.id(context);
@@ -37,10 +46,7 @@ function onForget() {
             const validate = checkForm(page);
             // Success
             if (validate.status) {
-                containerMessage.classList.add('success');
-                containerMessage.innerHTML = '<strong>Félicitation</strong><br>Un email vous a été envoyé !';
-                // TODO : call backend by socket
-                //Backend.forgetPassword(validate.data);
+                Backend.forgetPassword(validate.data);
             } else {
                 containerMessage.classList.add('warning');
                 containerMessage.innerHTML = '<strong>Erreur</strong><br>Une erreur est survenue !';
@@ -87,4 +93,4 @@ function checkForm(context, withToken = false) {
     return {status: true, data: (!withToken ? data.login : data) };
 }
 
-export { onForget };
+export { onForget, receiveForgetPassword };

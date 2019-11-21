@@ -10,7 +10,7 @@ use actix::{StreamHandler, Actor};
 use serde_json::Value;
 use serde_json::json;
 use crate::model::{Logement};
-use crate::controllers::{index, login, register, sources, upload, verify, info_logement, user_retrieve_datas_from_polling};
+use crate::controllers::{index, login, register, sources, upload, verify, info_logement, user_retrieve_datas_from_polling, forget_password};
 use std::cell::Cell;
 use actix_files as afs;
 
@@ -44,6 +44,11 @@ pub struct RegisterQuery {
     login: String,
     password: String,
     logement: Logement
+}
+
+#[derive(Deserialize)]
+pub struct ForgetPasswordQuery {
+    login: String
 }
 
 // do websocket handshake and start actor
@@ -100,10 +105,16 @@ impl StreamHandler<ws::Message, ws::ProtocolError> for Ws {
                             ctx.text(json!({ "topic": "403", "data": { "message": "You are not authorized"}}).to_string());
                         }
                     },
-                    /*"forget-password" => {
-                        let response: Value = forget_password(serde_json::from_value(request.data).unwrap());
-                        ctx.text(response.to_string());
-                    },*/
+                    "forget-password" => {
+                        let data: ForgetPasswordQuery = serde_json::from_value(request.data).unwrap();
+                        let (response, is_error) = forget_password(data.login);
+
+                        if is_error {
+                            ctx.text(json!({ "topic": "forget-password", "data": { "error": response }}).to_string());
+                        } else {
+                            ctx.text(json!({ "topic": "forget-password", "data": { "message": response }}).to_string());
+                        }
+                    },
                     "info-logement" => {
                         let data: InfoLogement = serde_json::from_value(request.data).unwrap();
                         let response: Logement = info_logement(&data);
