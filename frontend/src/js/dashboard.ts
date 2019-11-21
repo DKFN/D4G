@@ -1,9 +1,11 @@
 import { clean, bind } from "./dom";
 import { $ } from "./dollard";
 
-function onDashboard(data) {
+function onDashboard(data, admin) {
     clean('page-dashboard-user');
     const dashboard = $.id('page-dashboard-user');
+
+    console.log(admin);
 
     bind(dashboard, {
         'proprietaire': data.proprietaire.societe || data.proprietaire.prenom + ' ' + data.proprietaire.nom,
