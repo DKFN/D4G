@@ -34,11 +34,11 @@ const bootFront = () => {
 document.addEventListener("DOMContentLoaded", () => {
   Backend.initialize();
 
+  bootFront();
   let pid = setInterval(() => {
-      if (Backend.socket.readyState === WebSocket.OPEN) {
+    if (Backend.socket.readyState === WebSocket.OPEN) {
         console.log("OPENED CONNECTION OK");
         clearInterval(pid);
-        bootFront();
       } else {
         console.warn("Waiting for connection");
       }

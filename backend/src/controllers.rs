@@ -370,7 +370,8 @@ pub fn save_file(field: Field, foyer: String) -> impl Future<Item = i64, Error =
     let filename: String = field.content_disposition().unwrap().get_filename().unwrap().to_string()
         .replace(' ', "_").to_string();
     let file_path_string = format!("/public/uploads/{}", filename);
-    save_file_bdd(&file_path_string, &foyer);
+    let exposed_path_string = format!("/files/{}", filename);
+    save_file_bdd(&exposed_path_string, &foyer);
     let file = match fs::File::create(file_path_string) {
         Ok(file) => file,
         Err(e) => return Either::A(err(error::ErrorInternalServerError(e))),
