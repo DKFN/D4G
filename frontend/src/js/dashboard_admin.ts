@@ -24,7 +24,6 @@ function onArrayAdmin(tableId, data) {
         cellVille.innerHTML = item.ville;
         cellLocataire.innerHTML = item.locataire;
         cellProprietaire.innerHTML = item.proprietaire;
-        cellButton.innerHTML = '<a href="#">Plus</a>';
     });
 }
 
