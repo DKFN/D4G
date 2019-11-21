@@ -4,6 +4,7 @@ import {$} from "./dollard";
 
 function onDashboardAdmin(data) {
     clean('page-dashboard-admin');
+    localStorage.setItem('admin-data', data);
     onArrayAdmin('table-releve-admin', data)
 }
 
