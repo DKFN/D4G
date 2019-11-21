@@ -98,9 +98,15 @@ impl StreamHandler<ws::Message, ws::ProtocolError> for Ws {
                             } else {
                                 let uname = self.uname.clone();
                                 let polled_datas = user_retrieve_datas_from_polling(uname);
-                                self.latest_sent = polled_datas["data"].to_string().clone();
-                                ctx.text(polled_datas.to_string());
+                                let cache_valid = self.latest_sent == polled_datas["data"].to_string();
+                                println!("CACHE VALID ? {}", cache_valid);
+                                if cache_valid {
+                                    self.latest_sent = polled_datas["data"].to_string().clone();
+                                    ctx.text(polled_datas.to_string());
+                                }
                             }
+                        } else {
+                            ctx.text(json!({ "topic": "403", "data": { "message": "You are not authorized"}}).to_string());
                         }
                     }
                     _ => {} // Needed so compiler don't end up in error
