@@ -1,11 +1,9 @@
 import { clean, bind } from "./dom";
 import { $ } from "./dollard";
 
-function onDashboard(data, admin) {
+function onDashboard(data) {
     clean('page-dashboard-user');
     const dashboard = $.id('page-dashboard-user');
-
-    console.log(admin);
 
     bind(dashboard, {
         'proprietaire': data.proprietaire.societe || data.proprietaire.prenom + ' ' + data.proprietaire.nom,
@@ -13,11 +11,16 @@ function onDashboard(data, admin) {
         'pieces': data.nb_pieces + ' pièce' + (data.nb_pieces != '1' ? 's' : '') || 'Non renseignée',
         'ville': data.ville || 'Non renseignée'
     });
-    onArray(data);
+    onArrayUser('table-releve-user', data);
 }
 
-function onArray(data) {
-    const table: HTMLTableElement = <HTMLTableElement> $.id('table-releve-user');
+function onDashboardAdmin(data) {
+    clean('page-dashboard-admin');
+    onArrayAdmin('table-releve-admin', data)
+}
+
+function onArrayUser(tableId, data) {
+    const table: HTMLTableElement = <HTMLTableElement> $.id(tableId);
 
     const reversed = data.releves.reverse();
     reversed.forEach(function(item, index) {
@@ -31,4 +34,23 @@ function onArray(data) {
     });
 }
 
-export { onDashboard };
+function onArrayAdmin(tableId, data) {
+    const table: HTMLTableElement = <HTMLTableElement> $.id(tableId);
+
+    data.forEach(function (item) {
+       let row: HTMLTableRowElement = <HTMLTableRowElement> table.insertRow();
+       let cellFoyer: HTMLTableCellElement = <HTMLTableCellElement> row.insertCell();
+       let cellType: HTMLTableCellElement = <HTMLTableCellElement> row.insertCell();
+       let cellVille: HTMLTableCellElement = <HTMLTableCellElement> row.insertCell();
+       let cellLocataire: HTMLTableCellElement = <HTMLTableCellElement> row.insertCell();
+       let cellProprietaire: HTMLTableCellElement = <HTMLTableCellElement> row.insertCell();
+       let cellButton: HTMLTableCellElement = <HTMLTableCellElement> row.insertCell();
+       cellFoyer.innerHTML = item.foyer;
+       cellType.innerHTML = item.l_type;
+       cellVille.innerHTML = item.ville;
+       cellLocataire.innerHTML = item.locataire_prenom + " " + item.locataire_nom;
+       cellProprietaire.innerHTML = item.proprietaire_societe ? item.proprietaire_societe : item.proprietaire_prenom + " " + item.proprietaire_nom;
+       cellButton.innerHTML = '<a href="#">Plus</a>';
+    });
+}
+export { onDashboard, onDashboardAdmin };
