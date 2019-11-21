@@ -43,21 +43,20 @@ impl StreamHandler<ws::Message, ws::ProtocolError> for Ws {
     fn handle(&mut self, msg: ws::Message, ctx: &mut Self::Context) {
         match msg {
             ws::Message::Ping(msg) => {
-                println!("{}", msg);
+                println!("Ping {}", msg);
                 ctx.pong(&msg)
             },
             ws::Message::Text(text) => {
-                println!("{}", text);
-                let response: SocketMessage = serde_json::from_str(&text).unwrap();
-                println!("{}", response.topic);
-                if response.topic == "try-login" {
-                    let data = response.data.to_string();
-                    println!("DATA: {}", data);
-                    let response: LoginQuery = serde_json::from_str(&data).unwrap();
-                    let result = login(response);
-                    ctx.text(result.to_string());
+                println!("Text {}", text);
+
+                let request: SocketMessage = serde_json::from_str(&text).unwrap();
+                match request.topic.as_str() {
+                    "try-login" => {
+                        let response: Value = login(serde_json::from_value(request.data).unwrap());
+                        ctx.text(response.to_string());
+                    },
+                    _ => {} // Needed so compiler don't end up in error
                 }
-                ctx.text(text)
             },
             ws::Message::Binary(bin) => ctx.binary(bin),
             _ => (),
@@ -78,16 +77,16 @@ pub fn main() {
               ";
     println!("{}", splash);
     println!("[D4G] Web server launched o/");
-    println!("[D4G] Docker inner port : 8080");
+    println!("[D4G] Docker inner port : {}", app_port);
     println!("[D4G] UI Access http://localhost/");
     std::env::set_var("RUST_LOG", "actix_web=debug");
     env_logger::init();
     HttpServer::new(|| {
         App::new()
             .wrap(middleware::Compress::default())
+            .wrap(Logger::default())
             .route("/", web::get().to(index))
             .route("/socket", web::get().to(ws_index))
-            .wrap(Logger::default())
     })
         .bind(format!("0.0.0.0:{}", app_port))
         .unwrap()
