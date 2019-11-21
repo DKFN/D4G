@@ -1,3 +1,4 @@
+
 #[derive(Deserialize, Serialize)]
 pub struct Logement {
     pub foyer: String,
@@ -13,6 +14,18 @@ pub struct Logement {
     pub proprietaire: Proprietaire,
     pub locataire: Locataire,
     pub releves: Vec<Releve>,
+}
+
+#[derive(Deserialize, Serialize)]
+pub struct Resume {
+    pub foyer: String,
+    pub l_type: i32,
+    pub ville: String,
+    pub proprietaire_nom: Option<String>,
+    pub proprietaire_prenom: Option<String>,
+    pub proprietaire_societe: Option<String>,
+    pub locataire_nom: String,
+    pub locataire_prenom: String,
 }
 
 #[derive(Deserialize, Serialize)]

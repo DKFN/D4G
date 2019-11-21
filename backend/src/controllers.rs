@@ -3,7 +3,7 @@ use crate::{LoginQuery};
 use postgres::{Connection, TlsMode};
 use serde_json::Value;
 use serde_json::json;
-use crate::model::{Logement, Proprietaire, Locataire, Releve};
+use crate::model::{Logement, Proprietaire, Locataire, Releve, Resume};
 
 pub fn index() -> Result<NamedFile, actix_web::Error> {
     let path = "./public/front/index.html";
@@ -34,7 +34,7 @@ pub fn retrive_logement_from_foyer(user_foyer: &String) -> Logement {
     let locataire = locataires.get(0);
     let proprietaire = proprietaires.get(0);
 
-    let result = Logement {
+    Logement {
         foyer: user_foyer.clone().to_string().parse().unwrap(),
         l_type: logement.get(0),
         surface: logement.get(1),
@@ -56,10 +56,7 @@ pub fn retrive_logement_from_foyer(user_foyer: &String) -> Logement {
             prenom: locataire.get(1),
         },
         releves: vec![],
-    };
-
-    println!("{}", serde_json::to_string(&result).unwrap());
-    result
+    }
 }
 
 pub fn retrive_releves_from_foyer(user_foyer: &String) -> Vec<Releve>{
@@ -74,6 +71,26 @@ pub fn retrive_releves_from_foyer(user_foyer: &String) -> Vec<Releve>{
     }).collect()
 }
 
+pub fn retrive_logement_admin() -> Vec<Resume>{
+    let conn = connect_ddb();
+    let rows = conn.prepare("select l.foyer, l.type, l.ville, p.nom, p.prenom, p.societe, l2.nom, l2.prenom  from logement l
+                                            join locataire l2 on l.foyer = l2.foyer
+                                            join proprietaire p on l.foyer = p.foyer
+                                            order by l.foyer asc;").unwrap().query(&[]).unwrap();
+
+    rows.iter().map( | row | {
+        Resume {
+            foyer: row.get(0),
+            l_type: row.get(1),
+            ville: row.get(2),
+            proprietaire_nom: row.get(3),
+            proprietaire_prenom: row.get(4),
+            proprietaire_societe: row.get(5),
+            locataire_nom: row.get(6),
+            locataire_prenom: row.get(7),
+        }
+    }).collect()
+}
 pub fn login(query:LoginQuery) -> Value {
     let mut ret: Value = json!({
             "topic": "ko-login",
@@ -90,11 +107,16 @@ pub fn login(query:LoginQuery) -> Value {
         if active {
             let admin : bool = row.get(2);
             if !admin {
+                println!("Utilisateur connecte");
                 let user_foyer: String = row.get(1);
                 let mut result: Logement = retrive_logement_from_foyer(&user_foyer);
                 result.releves = retrive_releves_from_foyer(&user_foyer);
 
                 ret = json!({"topic": "ok-login", "data" : result});
+            } else {
+                println!("Admin connecte");
+                let result : Vec<Resume> = retrive_logement_admin();
+                ret = json!({"topic": "ok-login-admin", "data" : result});
             }
         } else {
             ret = json!({ "topic": "ko-login", "data": { "message": "Account not validated" }});
@@ -104,3 +126,5 @@ pub fn login(query:LoginQuery) -> Value {
         }
     ret
 }
+
+// D4G2019  vTbKanJFMiToP

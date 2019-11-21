@@ -2,7 +2,6 @@ extern crate env_logger;
 extern crate postgres;
 #[macro_use] extern crate serde_derive;
 use actix_web::{App, HttpServer, middleware, web};
-use actix_web::web::Json;
 use actix_web::middleware::Logger;
 use actix_web::{HttpRequest, HttpResponse};
 use actix_web_actors::ws;
