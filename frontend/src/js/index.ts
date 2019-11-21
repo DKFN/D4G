@@ -1,6 +1,6 @@
 import { $ } from "./dollard";
 import Backend from "./Backend";
-import backend from "./Backend";
+import {clean} from "./dom";
 
 // "Model" of response
 interface ResponseApi {
@@ -9,6 +9,7 @@ interface ResponseApi {
 
 // This is the bootstrapping function of the frontend
 const bootFront = () => {
+  clean('page-login');
   const login = $.id("btn-login");
   login.onclick = () => {
     Backend.login(
