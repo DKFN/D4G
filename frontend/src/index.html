@@ -160,15 +160,14 @@
                 <header>
                     <h4>Ajout d'un nouveau relevé</h4>
                     <hr>
-                    <form action="/file" method="POST" enctype="multipart/form-data">
+                    <form>
                         <fieldset>
                             <label for="date-details">Date</label>
-                            <input type="text" placeholder="Date du relevé" id="date-details" name="date">
+                            <input type="text" placeholder="Date du relevé" id="date-details" data-id="date">
                             <label for="amount">Montant</label>
-                            <input type="text" placeholder="Montant du relevé" id="amount" name="valeur">
-                            <br>
-                            <input type="file" name="Séléctionner un fichier" />
-                            <br>
+                            <input type="text" placeholder="Montant du relevé" id="amount" data-id="amount">
+                            <div class="message"></div>
+
                             <div style="position: absolute;">
                                 <button class="button-primary">Envoyer</button>
                                 <a class="button button-clear" action="cancel-modal">Annuler</a>
