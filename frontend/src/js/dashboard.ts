@@ -16,6 +16,7 @@ function onDashboard(data) {
 
 function onArray(data) {
     const table: HTMLTableElement = <HTMLTableElement> $.id('table-releve-user');
+
     const reversed = data.releves.reverse();
     reversed.forEach(function(item, index) {
         let row: HTMLTableRowElement = <HTMLTableRowElement> table.insertRow();
@@ -24,7 +25,7 @@ function onArray(data) {
         let cellProgression: HTMLTableCellElement = <HTMLTableCellElement> row.insertCell();
         cellDate.innerHTML = item.date;
         cellValeur.innerHTML = item.valeur;
-        cellProgression.innerHTML = (index < reversed.length ? item.valeur - reversed[index + 1].valeur : "").toString();
+        cellProgression.innerHTML = (index < reversed.length - 1 ? item.valeur - reversed[index + 1].valeur : "").toString();
     });
 }
 
