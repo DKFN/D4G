@@ -17,12 +17,14 @@ function onDashboard(data) {
 function onArray(data) {
     const table: HTMLTableElement = <HTMLTableElement> $.id('table-releve-user');
     const reversed = data.releves.reverse();
-    reversed.forEach(element => {
+    reversed.forEach(function(item, index) {
         let row: HTMLTableRowElement = <HTMLTableRowElement> table.insertRow();
         let cellDate: HTMLTableCellElement = <HTMLTableCellElement> row.insertCell();
         let cellValeur: HTMLTableCellElement = <HTMLTableCellElement> row.insertCell();
-        cellDate.innerHTML = element.date;
-        cellValeur.innerHTML = element.valeur;
+        let cellProgression: HTMLTableCellElement = <HTMLTableCellElement> row.insertCell();
+        cellDate.innerHTML = item.date;
+        cellValeur.innerHTML = item.valeur;
+        cellProgression.innerHTML = (index < reversed.length ? item.valeur - reversed[index + 1].valeur : "").toString();
     });
 }
 
