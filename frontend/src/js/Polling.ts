@@ -16,7 +16,7 @@ export default class Polling {
     Polling._instance = this;
   }
 
-  send(data = "") {
+  send(data = null) {
     clearInterval(this.intervalId);
 
     this.intervalId = setInterval(() => {

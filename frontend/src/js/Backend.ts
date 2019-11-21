@@ -110,11 +110,17 @@ class Backend {
   }
 
   pollData(data) {
+    const object = {
+      topic: "poll-data",
+      data: {}
+    };
+
+    if (data) {
+      object.foyer = data;
+    }
+
     this.send(
-      JSON.stringify({
-        topic: "poll-data",
-        data: { "foyer":data }
-      })
+      JSON.stringify(object)
     );
   }
 
