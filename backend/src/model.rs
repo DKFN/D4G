@@ -32,7 +32,7 @@ pub struct Locataire {
 #[derive(Deserialize, Serialize)]
 pub struct Releve {
     pub date: String,
-    pub valeur: String,
+    pub valeur: i32,
 }
 
 #[derive(Deserialize, Serialize)]

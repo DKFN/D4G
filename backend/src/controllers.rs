@@ -3,7 +3,7 @@ use crate::{LoginQuery};
 use postgres::{Connection, TlsMode};
 use serde_json::Value;
 use serde_json::json;
-use crate::model::{Logement, Proprietaire, Locataire};
+use crate::model::{Logement, Proprietaire, Locataire, Releve};
 
 pub fn index() -> Result<NamedFile, actix_web::Error> {
     let path = "./public/front/index.html";
@@ -63,8 +63,15 @@ pub fn login(query:LoginQuery) -> Value {
                     nom: locataire.get(0),
                     prenom: locataire.get(1),
                 },
-                releves: vec![]
+                releves: releves.iter().map( | row | {
+                    Releve {
+                        date: row.get(0),
+                        valeur: row.get(1),
+                    }
+                }).collect()
+
             };
+
             println!("{}", serde_json::to_string(&result).unwrap());
 
 
