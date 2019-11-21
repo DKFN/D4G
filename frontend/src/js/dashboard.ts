@@ -20,7 +20,7 @@ function onDashboard(data) {
 
     onArrayUser('table-releve-user', data);
 
-    Polling.instance.send();
+    Polling.instance.send(data.foyer);
 }
 
 function onArrayUser(tableId, data) {
