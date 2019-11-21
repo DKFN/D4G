@@ -157,3 +157,11 @@ main.visible {
 .modal .body fieldset div {
     bottom: 2rem;
 }
+
+.red-text {
+    color: crimson;
+}
+
+.green-text {
+    color: limegreen;
+}

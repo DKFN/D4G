@@ -18,10 +18,10 @@ function onArrayAdmin(tableId, data) {
         let cellType: HTMLTableCellElement = <HTMLTableCellElement> row.insertCell();
         let cellVille: HTMLTableCellElement = <HTMLTableCellElement> row.insertCell();
         let cellLocataire: HTMLTableCellElement = <HTMLTableCellElement> row.insertCell();
-        let cellProprietaire: HTMLTableCellElement = <HTMLTableCellElement> row.insertCell()
+        let cellProprietaire: HTMLTableCellElement = <HTMLTableCellElement> row.insertCell();
 
         cellFoyer.innerHTML = item.foyer;
-        cellType.innerHTML = item.l_type;
+        cellType.innerHTML = item.l_type === 1 ? "Appartement" : "Maison";
         cellVille.innerHTML = item.ville;
         cellLocataire.innerHTML = item.locataire;
         cellProprietaire.innerHTML = item.proprietaire;
