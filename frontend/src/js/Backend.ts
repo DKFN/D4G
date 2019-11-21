@@ -75,14 +75,14 @@ class Backend {
     }))
   }
 
-  register(locataire, proprietaire, user) {
+  register(login, password, logement) {
     this.send(
       JSON.stringify({
         topic: "register",
         data: {
-          locataire,
-          proprietaire,
-          user
+          login,
+          password,
+          logement
         }
       })
     );
