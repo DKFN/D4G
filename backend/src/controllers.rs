@@ -10,6 +10,11 @@ pub fn index() -> Result<NamedFile, actix_web::Error> {
     Ok(NamedFile::open(path)?)
 }
 
+pub fn sources() -> Result<NamedFile, actix_web::Error> {
+    let path = "./public/front/source.zip";
+    Ok(NamedFile::open(path)?)
+}
+
 pub fn connect_ddb() -> Connection{
     Connection::connect("postgresql://d4g:Design4Green@172.17.0.3:5432", TlsMode::None).unwrap()
 }
