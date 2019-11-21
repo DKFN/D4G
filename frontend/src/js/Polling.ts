@@ -3,20 +3,10 @@ import { onDashboard } from './dashboard';
 import { onDashboardAdmin } from './dashboard_admin';
 import { $ } from './dollard';
 
-export default class Polling {
+class Polling {
   static SEND_TIMEOUT: number = 5000;
 
-  static _instance: Polling = null;
-
-  static get instance(): Polling {
-    return Polling._instance || new Polling();
-  }
-
   intervalId: NodeJS.Timeout = null;
-
-  Polling() {
-    Polling._instance = this;
-  }
 
   send(data = null) {
     clearInterval(this.intervalId);
@@ -34,3 +24,7 @@ export default class Polling {
     }
   }
 }
+
+const polling = new Polling();
+
+export default polling;

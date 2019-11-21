@@ -4,11 +4,6 @@ import {clean} from "./dom";
 import { onForget } from "./forget";
 import {initLogin} from "./login";
 
-// "Model" of response
-interface ResponseApi {
-  name: string;
-}
-
 const bootFront = () => {
 // This is the bootstrapping function of the frontend
   const url = new URL(window.location.href);
