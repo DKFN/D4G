@@ -3,6 +3,7 @@ import { onDetails } from "./details";
 import { $ } from "./dollard";
 import Polling from "./Polling";
 import File from "./File";
+import {closeModal, closingModal} from "./modal";
 
 function onDashboard(data) {
     clean('page-dashboard-user');
@@ -34,12 +35,13 @@ function uploadFileToFoyer(context, foyer) {
     // Open modal
     const modal = context.getElementsByClassName('modal')[0];
     modal.classList.toggle('active');
+    closingModal(modal);
     const form = modal.getElementsByTagName('form')[0];
     File.setInput(form.getElementsByTagName('input')[0]);
     File.setFoyer(foyer);
     form.getElementsByTagName('button')[0].onclick = () => {
-        console.log('I am in the handler');
         File.upload();
+        closeModal(modal);
         return false;
     };
 }
