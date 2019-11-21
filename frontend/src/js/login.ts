@@ -1,5 +1,6 @@
 import { $ } from "./dollard";
-import { onDashboard, onDashboardAdmin } from "./dashboard";
+import { onDashboard } from "./dashboard";
+import { onDashboardAdmin } from "./dashboard_admin"
 
 function onLogin(data, status, admin=false) {
     const containerMessage = $.id('page-login').getElementsByClassName('message')[0];
