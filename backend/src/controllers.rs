@@ -146,6 +146,7 @@ pub fn retrive_logement_from_foyer(user_foyer: &String) -> Logement {
         .query(&[user_foyer]).unwrap();
     let proprietaires = conn.prepare("select nom, prenom, societe, adresse from proprietaire p where p.foyer = $1;").unwrap()
         .query(&[user_foyer]).unwrap();
+    let files = get_files_for_foyer(user_foyer);
 
 
     let logement = logements.get(0);
@@ -174,6 +175,7 @@ pub fn retrive_logement_from_foyer(user_foyer: &String) -> Logement {
             prenom: locataire.get(1),
         },
         releves: vec![],
+        fichiers: files
     }
 }
 
@@ -263,6 +265,17 @@ pub fn login(query: &LoginQuery) -> (Value, bool, bool) {
             ret = json!({ "topic": "ko-login", "data": { "message": "Username or password incorrect" }});
         }
     (ret, conn_ok, is_admin)
+}
+
+pub fn get_files_for_foyer(foyer: &String) -> Vec<String> {
+    let conn = connect_ddb();
+    let mut res: Vec<String> = vec![];
+    let rows = conn.prepare("SELECT file_path FROM fichier WHERE foyer = $1;").unwrap()
+        .query(&[foyer]).unwrap();
+    rows.iter().for_each(|f| -> (){
+        res.push(f.get(0))
+    });
+    res
 }
 
 pub fn save_file_bdd(filepath: &String, foyer: &String) {

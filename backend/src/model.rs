@@ -14,6 +14,7 @@ pub struct Logement {
     pub proprietaire: Proprietaire,
     pub locataire: Locataire,
     pub releves: Vec<Releve>,
+    pub fichiers: Vec<String>
 }
 
 #[derive(Deserialize, Serialize)]
