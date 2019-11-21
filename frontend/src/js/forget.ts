@@ -4,6 +4,26 @@ import { $ } from "./dollard";
 
 const context = 'page-forget';
 
+function receiveForgetPassword(data) {
+    const page = $.id(context);
+    if (page) {
+        const containerMessage = page.getElementsByClassName('message')[0];
+        containerMessage.className = "message";
+        containerMessage.classList.add(data.error ? 'warning' : 'success');
+        containerMessage.innerHTML = `<strong>${data.error ? 'Erreur' : 'Félicitation'}</strong><br>${data.error || data.message}`;
+    }
+}
+
+function receiveRenewPassword(data) {
+    const page = $.id(context);
+    if (page) {
+        const containerMessage = page.getElementsByClassName('message')[0];
+        containerMessage.className = "message";
+        containerMessage.classList.add(data.error ? 'warning' : 'success');
+        containerMessage.innerHTML = `<strong>${data.error ? 'Erreur' : 'Félicitation'}</strong><br>${data.error || data.message}`;
+    }
+}
+
 function onForget() {
     clean(context);
     const page = $.id(context);
@@ -11,20 +31,16 @@ function onForget() {
     const url = new URL(window.location.href);
     const containerMessage = page.getElementsByClassName('message')[0];
     const followingForm = page.querySelector('[if="nextForm"]');
+
     if (url.searchParams.has('token')) {
         followingForm.classList.remove('if-none');
         submissionButton.onclick = () => {
             const validate = checkForm(page, true);
-            console.log(validate);
             if (validate.status) {
-                containerMessage.classList.add('success');
-                containerMessage.innerHTML = '<strong>Félicitation</strong><br>Vous allez être rediriger vers la page de connexion';
-                // TODO : call backend by socket
-                /*Backend.renewPassword(
-                    login,
-                    password,
-                    url.searchParams.get('token')
-                );*/
+                Backend.renewPassword(
+                    url.searchParams.get('token'),
+                    validate.data.password
+                );
             } else {
                 containerMessage.classList.add('warning');
                 containerMessage.innerHTML = '<strong>Erreur</strong><br>' + validate.message;
@@ -37,10 +53,7 @@ function onForget() {
             const validate = checkForm(page);
             // Success
             if (validate.status) {
-                containerMessage.classList.add('success');
-                containerMessage.innerHTML = '<strong>Félicitation</strong><br>Un email vous a été envoyé !';
-                // TODO : call backend by socket
-                //Backend.forgetPassword(validate.data);
+                Backend.forgetPassword(validate.data);
             } else {
                 containerMessage.classList.add('warning');
                 containerMessage.innerHTML = '<strong>Erreur</strong><br>Une erreur est survenue !';
@@ -87,4 +100,4 @@ function checkForm(context, withToken = false) {
     return {status: true, data: (!withToken ? data.login : data) };
 }
 
-export { onForget };
+export { onForget, receiveForgetPassword, receiveRenewPassword };
