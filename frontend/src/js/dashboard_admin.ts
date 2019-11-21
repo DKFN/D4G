@@ -27,6 +27,16 @@ function onArrayAdmin(tableId, data) {
         cellProprietaire.innerHTML = item.proprietaire;
 
         row.addEventListener("click", (() => {
+            const target: HTMLDivElement = <HTMLDivElement> $.id("user-dashboard-main");
+            let back_button: HTMLButtonElement = <HTMLButtonElement> document.createElement("button");
+            back_button.innerHTML = "&#8676 Retour sur l'interface admin";
+            back_button.addEventListener("click", (() => {
+                const target: HTMLDivElement = <HTMLDivElement> $.id("user-dashboard-main");
+                target.removeChild(target.firstChild);
+                onDashboardAdmin(localStorage.getItem("admin-data"));
+            }));
+
+            target.insertBefore(back_button, target.firstChild);
             backend.infoLogement(item.foyer);
         }))
     });
