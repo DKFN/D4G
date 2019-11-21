@@ -98,6 +98,7 @@ CREATE TABLE public.utilisateur (
     login character varying(64) NOT NULL,
     password character varying(255) NOT NULL,
     active boolean NOT NULL,
+    token character varying(21),
     admin boolean NOT NULL
 );
 
@@ -206,4 +207,3 @@ ALTER TABLE ONLY public.releve
 --
 -- PostgreSQL database dump complete
 --
-

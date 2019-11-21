@@ -8,7 +8,11 @@ use actix_web_actors::ws;
 use actix;
 use actix::{StreamHandler, Actor};
 use serde_json::Value;
-use crate::controllers::{index, login, sources};
+use serde_json::json;
+use crate::model::{Logement};
+use crate::controllers::{index, login, register, sources, upload};
+use std::cell::Cell;
+use actix_files as afs;
 
 mod controllers;
 mod model;
@@ -23,6 +27,13 @@ pub struct SocketMessage {
 pub struct LoginQuery {
     login: String,
     password: String
+}
+
+#[derive(Deserialize, Serialize)]
+pub struct RegisterQuery {
+    login: String,
+    password: String,
+    logement: Logement
 }
 
 // do websocket handshake and start actor
@@ -54,6 +65,12 @@ impl StreamHandler<ws::Message, ws::ProtocolError> for Ws {
                         let response: Value = login(serde_json::from_value(request.data).unwrap());
                         ctx.text(response.to_string());
                     },
+                    "register" => {
+                        let data: RegisterQuery = serde_json::from_value(request.data).unwrap();
+                        let response = register(data.login, data.password, data.logement);
+
+                        ctx.text(json!({ "topic": "register", "data": { "message": response }}).to_string());
+                    }
                     _ => {} // Needed so compiler don't end up in error
                 }
             },
@@ -61,6 +78,10 @@ impl StreamHandler<ws::Message, ws::ProtocolError> for Ws {
             _ => (),
         }
     }
+}
+
+pub struct AppState {
+    pub counter: Cell<usize>,
 }
 
 pub fn main() {
@@ -80,13 +101,20 @@ pub fn main() {
     println!("[D4G] UI Access http://localhost/");
     std::env::set_var("RUST_LOG", "actix_web=debug");
     env_logger::init();
+
     HttpServer::new(|| {
         App::new()
+            .data(Cell::new(0usize))
             .wrap(middleware::Compress::default())
             .wrap(Logger::default())
             .route("/", web::get().to(index))
             .route("/source.zip", web::get().to(sources))
             .route("/socket", web::get().to(ws_index))
+            .route("/file", web::post().to_async(upload))
+            .service(
+                afs::Files::new("/dl", "/public/uploads")
+                    .show_files_listing()
+                    .use_last_modified(true))
     })
         .bind(format!("0.0.0.0:{}", app_port))
         .unwrap()
