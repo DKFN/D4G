@@ -10,7 +10,7 @@ use actix::{StreamHandler, Actor};
 use serde_json::Value;
 use serde_json::json;
 use crate::model::{Logement};
-use crate::controllers::{index, login, register, sources, upload, verify, user_retrieve_datas_from_polling};
+use crate::controllers::{index, login, register, sources, upload, verify, info_logement, user_retrieve_datas_from_polling};
 use std::cell::Cell;
 use actix_files as afs;
 
@@ -27,6 +27,16 @@ pub struct SocketMessage {
 pub struct LoginQuery {
     login: String,
     password: String
+}
+
+#[derive(Deserialize, Serialize)]
+pub struct ForgetPassword {
+    login: String
+}
+
+#[derive(Deserialize, Serialize)]
+pub struct InfoLogement {
+    foyer: String
 }
 
 #[derive(Deserialize, Serialize)]
@@ -89,7 +99,15 @@ impl StreamHandler<ws::Message, ws::ProtocolError> for Ws {
                         } else {
                             ctx.text(json!({ "topic": "403", "data": { "message": "You are not authorized"}}).to_string());
                         }
-
+                    },
+                    /*"forget-password" => {
+                        let response: Value = forget_password(serde_json::from_value(request.data).unwrap());
+                        ctx.text(response.to_string());
+                    },*/
+                    "info-logement" => {
+                        let data: InfoLogement = serde_json::from_value(request.data).unwrap();
+                        let response: Logement = info_logement(&data);
+                        ctx.text(json!({ "topic": "ok-info", "data": response}).to_string());
                     },
                     "poll-data" => {
                         if self.auth {

@@ -15,24 +15,21 @@ export default class Polling {
     return Polling._instance || new Polling();
   }
 
-  timeoutId: NodeJS.Timeout = null;
+  intervalId: NodeJS.Timeout = null;
 
   Polling() {
     Polling._instance = this;
   }
 
   send() {
-    if (this.timeoutId === null) {
-      this.timeoutId = setTimeout(() => {
+    if (!this.intervalId) {
+      this.intervalId = setInterval(() => {
         Backend.pollData();
       }, Polling.SEND_TIMEOUT);
     }
   }
 
   receive(data) {
-    clearTimeout(this.timeoutId);
-    this.timeoutId = null;
-
     onDashboard(data);
   }
 }
