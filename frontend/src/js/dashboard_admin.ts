@@ -21,8 +21,8 @@ function onArrayAdmin(tableId, data) {
         cellFoyer.innerHTML = item.foyer;
         cellType.innerHTML = item.l_type;
         cellVille.innerHTML = item.ville;
-        cellLocataire.innerHTML = item.locataire_prenom + " " + item.locataire_nom;
-        cellProprietaire.innerHTML = item.proprietaire_societe ? item.proprietaire_societe : item.proprietaire_prenom + " " + item.proprietaire_nom;
+        cellLocataire.innerHTML = item.locataire;
+        cellProprietaire.innerHTML = item.proprietaire;
         cellButton.innerHTML = '<a href="#">Plus</a>';
     });
 }
