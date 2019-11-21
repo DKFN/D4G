@@ -26,3 +26,5 @@ function onArrayAdmin(tableId, data) {
         cellButton.innerHTML = '<a href="#">Plus</a>';
     });
 }
+
+export { onDashboardAdmin }
