@@ -79,15 +79,17 @@ pub fn retrive_logement_admin() -> Vec<Resume>{
                                             order by l.foyer asc;").unwrap().query(&[]).unwrap();
 
     rows.iter().map( | row | {
+        let maybe_societe: Option<String> = row.get(5);
+        let nom: String = row.get(6);
+        let prenom: String = row.get( 7);
+        let pnom: Option<String> = row.get(3);
+        let pprenom: Option<String> = row.get(4);
         Resume {
             foyer: row.get(0),
             l_type: row.get(1),
             ville: row.get(2),
-            proprietaire_nom: row.get(3),
-            proprietaire_prenom: row.get(4),
-            proprietaire_societe: row.get(5),
-            locataire_nom: row.get(6),
-            locataire_prenom: row.get(7),
+            locataire: format!("{} {}", &nom, &prenom),
+            proprietaire: maybe_societe.unwrap_or(format!("{} {}", &pnom.unwrap_or_default(), &pprenom.unwrap_or_default())),
         }
     }).collect()
 }
@@ -102,6 +104,7 @@ pub fn login(query:LoginQuery) -> Value {
     let rows = conn.prepare("SELECT active, foyer, admin FROM utilisateur where login=$1 AND password=$2").unwrap()
         .query(&[&query.login, &query.password]).unwrap();
     if !rows.is_empty() {
+
         let row = rows.get(0);
         let active : bool = row.get(0);
         if active {

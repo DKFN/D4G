@@ -21,11 +21,8 @@ pub struct Resume {
     pub foyer: String,
     pub l_type: i32,
     pub ville: String,
-    pub proprietaire_nom: Option<String>,
-    pub proprietaire_prenom: Option<String>,
-    pub proprietaire_societe: Option<String>,
-    pub locataire_nom: String,
-    pub locataire_prenom: String,
+    pub proprietaire: String,
+    pub locataire: String,
 }
 
 #[derive(Deserialize, Serialize)]
