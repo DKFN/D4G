@@ -5,7 +5,7 @@ extern crate lettre_email;
 extern crate regex;
 
 use actix_files::NamedFile;
-use crate::{LoginQuery, Ws};
+use crate::{LoginQuery};
 use postgres::{Connection, TlsMode};
 use serde_json::Value;
 use serde_json::json;
@@ -16,14 +16,14 @@ use lettre::smtp::ConnectionReuseParameters;
 use native_tls::{Protocol, TlsConnector};
 use lettre_email::{Email};
 use regex::Regex;
-use actix_web::{web, HttpResponse, Error, error};
+use actix_web::{web, HttpResponse, HttpRequest, Error, error};
+use actix_web::http::{header, StatusCode};
 use std::cell::Cell;
 use futures::{Future, Stream};
 use futures::future::{Either, err};
 use std::fs;
 use actix_multipart::{Field, Multipart, MultipartError};
 use std::io::Write;
-use actix_web_actors::ws;
 
 pub fn index() -> Result<NamedFile, actix_web::Error> {
     let path = "./public/front/index.html";
@@ -35,6 +35,23 @@ pub fn sources() -> Result<NamedFile, actix_web::Error> {
     Ok(NamedFile::open(path)?)
 }
 
+pub fn verify(_req: HttpRequest, path: web::Path<(String,)>) -> HttpResponse {
+    let token = path.0.clone();
+    let conn = connect_ddb();
+
+    let rows = conn.prepare("SELECT active FROM utilisateur where token=$1").unwrap()
+        .query(&[&token]).unwrap();
+
+    if !rows.is_empty() {
+        conn.prepare("UPDATE utilisateur SET active = $1, token = NULL where token=$2").unwrap()
+            .query(&[&true, &token]).unwrap();
+    }
+
+    HttpResponse::build(StatusCode::TEMPORARY_REDIRECT)
+        .header(header::LOCATION, "/")
+        .finish()
+}
+
 pub fn connect_ddb() -> Connection{
     Connection::connect("postgresql://d4g:Design4Green@172.17.0.3:5432", TlsMode::None).unwrap()
 }
@@ -43,10 +60,10 @@ pub fn register(username: String, password: String, logement: Logement) -> Strin
     let conn = connect_ddb();
     let result;
 
-    let row = conn.prepare("SELECT active FROM utilisateur where login=$1").unwrap()
+    let rows = conn.prepare("SELECT active FROM utilisateur where login=$1").unwrap()
         .query(&[&username]).unwrap();
 
-    if !row.is_empty() {
+    if !rows.is_empty() {
         result = "User already exist".to_string();
     } else {
         let token = nanoid::simple();
@@ -106,8 +123,8 @@ pub fn register(username: String, password: String, logement: Logement) -> Strin
         conn.prepare("INSERT INTO locataire VALUES ($1, $2, $3)").unwrap()
             .query(&[&foyer, &logement.locataire.nom, &logement.locataire.prenom]).unwrap();
 
-        conn.prepare("INSERT INTO utilisateur VALUES ($1, $2, $3, $4, $5)").unwrap()
-            .query(&[&foyer, &username, &password, &!username_is_email, &token]).unwrap();
+        conn.prepare("INSERT INTO utilisateur VALUES ($1, $2, $3, $4, $5, $6)").unwrap()
+            .query(&[&foyer, &username, &password, &!username_is_email, &token, &false]).unwrap();
 
         result = "Check your mail to verify your account".to_string()
     }
