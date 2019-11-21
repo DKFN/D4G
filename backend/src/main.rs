@@ -26,23 +26,6 @@ pub struct LoginQuery {
     password: String
 }
 
-// "Model" Json et Database
-#[derive(Deserialize, Serialize)]
-pub struct ModelDeFou {
-    name: String,
-}
-
-
-
-// "Controlleur"
-pub fn greet() -> Result<Json<ModelDeFou>, actix_web::Error> {
-    Ok(Json(ModelDeFou { name: "COUCOU".to_string()}))
-}
-
-// autre controlleur :)
-
-
-
 // do websocket handshake and start actor
 fn ws_index(req: HttpRequest, stream: web::Payload) -> Result<HttpResponse, actix_web::Error> {
     ws::start(Ws, &req,  stream)
@@ -104,7 +87,6 @@ pub fn main() {
             .wrap(middleware::Compress::default())
             .route("/", web::get().to(index))
             .route("/socket", web::get().to(ws_index))
-            .route("/api/test", web::get().to(greet))
             .wrap(Logger::default())
     })
         .bind(format!("0.0.0.0:{}", app_port))
