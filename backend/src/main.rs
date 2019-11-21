@@ -10,7 +10,7 @@ use actix::{StreamHandler, Actor};
 use serde_json::Value;
 use serde_json::json;
 use crate::model::{Logement};
-use crate::controllers::{index, login, register, sources, upload, verify, info_logement};
+use crate::controllers::{index, login, register, sources, upload, verify, info_logement, user_retrieve_datas_from_polling};
 use std::cell::Cell;
 use actix_files as afs;
 
@@ -48,14 +48,15 @@ pub struct RegisterQuery {
 
 // do websocket handshake and start actor
 fn ws_index(req: HttpRequest, stream: web::Payload) -> Result<HttpResponse, actix_web::Error> {
-    ws::start(Ws { uname: "".to_string(), is_admin: false, foyers: vec![], auth: false }, &req, stream)
+    ws::start(Ws { uname: "".to_string(), is_admin: false, foyers: vec![], auth: false, latest_sent: "".to_string() }, &req, stream)
 }
 
 pub struct Ws {
     pub uname: String,
     pub is_admin: bool,
     pub foyers: Vec<String>,
-    pub auth: bool
+    pub auth: bool,
+    pub latest_sent: String,
 }
 
 impl Actor for Ws {
@@ -85,15 +86,19 @@ impl StreamHandler<ws::Message, ws::ProtocolError> for Ws {
                             self.uname = data.login.clone();
                             self.auth = true;
                             self.is_admin = is_admin.clone();
+                            self.latest_sent = response["data"].to_string().clone();
                         }
-
-                        ctx.text(response.to_string());
+                        ctx.text(response.to_string().clone());
                     },
                     "register" => {
-                        let data: RegisterQuery = serde_json::from_value(request.data).unwrap();
-                        let response = register(data.login, data.password, data.logement);
+                        if self.auth && self.is_admin {
+                            let data: RegisterQuery = serde_json::from_value(request.data).unwrap();
+                            let response = register(data.login, data.password, data.logement);
 
-                        ctx.text(json!({ "topic": "register", "data": { "message": response }}).to_string());
+                            ctx.text(json!({ "topic": "register", "data": { "message": response }}).to_string());
+                        } else {
+                            ctx.text(json!({ "topic": "403", "data": { "message": "You are not authorized"}}).to_string());
+                        }
                     },
                     /*"forget-password" => {
                         let response: Value = forget_password(serde_json::from_value(request.data).unwrap());
@@ -103,6 +108,24 @@ impl StreamHandler<ws::Message, ws::ProtocolError> for Ws {
                         let data: InfoLogement = serde_json::from_value(request.data).unwrap();
                         let response: Logement = info_logement(&data);
                         ctx.text(json!({ "topic": "ok-info", "data": response}).to_string());
+                    },
+                    "poll-data" => {
+                        if self.auth {
+                            if self.is_admin {
+                                ctx.text("ADMIN");
+                            } else {
+                                let uname = self.uname.clone();
+                                let polled_datas = user_retrieve_datas_from_polling(uname);
+                                let cache_valid = self.latest_sent == polled_datas["data"].to_string();
+                                println!("CACHE VALID ? {}", cache_valid);
+                                if !cache_valid {
+                                    self.latest_sent = polled_datas["data"].to_string().clone();
+                                    ctx.text(polled_datas.to_string());
+                                }
+                            }
+                        } else {
+                            ctx.text(json!({ "topic": "403", "data": { "message": "You are not authorized"}}).to_string());
+                        }
                     }
                     _ => {} // Needed so compiler don't end up in error
                 }
