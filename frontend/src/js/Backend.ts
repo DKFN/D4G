@@ -42,6 +42,10 @@ class Backend {
       case "ok-login":
         onLogin(json.data, true);
         break;
+
+      case "ok-login-admin":
+        onLogin(json.data, true, true);
+        break;
     }
   }
 

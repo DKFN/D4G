@@ -6,14 +6,13 @@ use actix_web::middleware::Logger;
 use actix_web::{HttpRequest, HttpResponse};
 use actix_web_actors::ws;
 use actix;
-use actix::{StreamHandler, Actor, ActorContext};
+use actix::{StreamHandler, Actor};
 use serde_json::Value;
 use serde_json::json;
 use crate::model::{Logement};
-use crate::controllers::{index, login, register, sources, upload};
+use crate::controllers::{index, login, register, sources, upload, verify};
 use std::cell::Cell;
 use actix_files as afs;
-use std::collections::HashMap;
 
 mod controllers;
 mod model;
@@ -123,6 +122,7 @@ pub fn main() {
             .wrap(middleware::Compress::default())
             .wrap(Logger::default())
             .route("/", web::get().to(index))
+            .service(web::resource("/verify/{token}").route(web::get().to(verify)))
             .route("/source.zip", web::get().to(sources))
             .route("/socket", web::get().to(ws_index))
             .route("/file/{foyer}", web::post().to_async(upload))
