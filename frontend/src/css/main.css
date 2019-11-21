@@ -43,3 +43,35 @@ main {
 main.visible {
     display: inherit;
 }
+.row .column.menu {
+    padding: 1rem 0;
+    align-items: center;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+.row .column.menu div.menu-list {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-evenly;
+    height: 100%;
+    flex: 1;
+}
+.row .column.menu div.menu-list.aside-first {
+    justify-content: flex-start;
+}
+.row .column.menu div.menu-list.aside-first, .row .menu div.menu-list.aside-end {
+    height: auto;
+    flex: 2;
+}
+.row .column.menu div.menu-list.aside-end {
+    margin: 0;
+    justify-content: flex-end;
+}
+.box {
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 0.5em 1em -0.125em rgba(10,10,10,.1), 0 0 0 1px rgba(10,10,10,.02);
+    padding: 2rem;
+}
