@@ -102,7 +102,7 @@ class Backend {
     this.send(
       JSON.stringify({
         topic: "poll-data",
-        data: ""
+        data: { "foyer":data }
       })
     );
   }
