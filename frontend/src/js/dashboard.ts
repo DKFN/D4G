@@ -23,11 +23,6 @@ function onDashboard(data) {
     Polling.instance.send();
 }
 
-function onDashboardAdmin(data) {
-    clean('page-dashboard-admin');
-    onArrayAdmin('table-releve-admin', data)
-}
-
 function onArrayUser(tableId, data) {
     const table: HTMLTableElement = <HTMLTableElement> $.id(tableId);
 
