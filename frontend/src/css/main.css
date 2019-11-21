@@ -165,3 +165,8 @@ main.visible {
 .green-text {
     color: limegreen;
 }
+
+#access-files-dashboard tbody tr {
+    color: #3273dc;
+    cursor: pointer;
+}

@@ -27,6 +27,7 @@ function onDashboard(data) {
     };
 
     onArrayUser('table-releve-user', data);
+    onArrayFiles('access-files-dashboard', data.fichiers);
 
     Polling.instance.send(data.foyer);
 }
@@ -44,6 +45,17 @@ function uploadFileToFoyer(context, foyer) {
         closeModal(modal);
         return false;
     };
+}
+
+function onArrayFiles(id, files) {
+    const contextTable = $.id(id);
+    contextTable.getElementsByTagName('tbody')[0].innerHTML = '';
+    files.forEach(el => {
+       contextTable.innerHTML += `<tr><td>${el.replace('/files/','')}</td></tr>`;
+        contextTable.onclick = () => {
+            window.open(window.location.href.replace(/\/$/, '') + el, '_blank');
+        }
+    });
 }
 
 function onArrayUser(tableId, data) {
