@@ -106,6 +106,7 @@ main.visible {
 .row .column.table-releve {
     max-height: calc(100vh - 4rem);
     overflow-y: scroll;
+    -ms-overflow-y: scroll;
     padding: 2rem;
 }
 
@@ -151,6 +152,8 @@ main.visible {
     width: 50vw;
     height: 50vh;
     margin: auto;
+    overflow-y: scroll;
+    -ms-overflow-y: scroll;
 }
 
 .modal .body fieldset div {

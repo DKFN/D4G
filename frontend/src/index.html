@@ -189,7 +189,7 @@
                     <div class="column table-releve">
                         <div>
                             <h4 class="float-left">Liste des foyer</h4>
-                            <a href="#" class="button button-clear float-right">Ajouter un nouvel élément</a>
+                            <a action="open-modal" class="button button-clear float-right">Ajouter un nouvel élément</a>
                         </div>
                         <table id="table-releve-admin">
                             <tr>
@@ -211,13 +211,63 @@
                     <hr>
                     <form id="register">
                         <fieldset>
-                            <label for="alimentation">Alimentation</label>
-                            <input type="text" placeholder="Type d'alimentation" id="alimentation" name="alimentation">
-                            <div style="position: absolute;">g
-                                <button class="button-primary">Envoyer</button>
-                                <a class="button button-clear" action="cancel-modal">Annuler</a>
-                            </div>
+                            <legend>Informations d'identification</legend>
+                            <label for="identifiant">Identifiant</label>
+                            <input type="text" placeholder="Identifiant" id="identifiant" name="identifiant"/>
+                            <label for="mdp">Mot de passe</label>
+                            <input type="password" placeholder="Mot de passe" id="mdp" name="mdp"/>
                         </fieldset>
+                        <fieldset>
+                            <legend>Locataire</legend>
+                            <label for="locataire_nom">Nom</label>
+                            <input type="text" placeholder="Nom du locataire" id="locataire_nom" name="locataire_nom"/>
+                            <label for="locataire_prenom">Prénom</label>
+                            <input type="text" placeholder="Prénom du locataire" id="locataire_prenom" name="locataire_prenom"/>
+                        </fieldset>
+                        <fieldset id="proprietaire_form">
+                            <legend>Propriétaire</legend>
+                            <p>Type de propriétaire</p>
+                            <input type="radio" id="personne" name="type_proprietaire" value="personne"/>Individu
+                            <input type="radio" id="entreprise" name="type_proprietaire" value="entreprise">Entreprise
+                            <label class="if-none" for="proprietaire_nom">Nom</label>
+                            <input class="if-none" type="text" placeholder="Nom du propriétaire" id="proprietaire_nom" name="proprietaire_nom"/>
+                            <label class="if-none" for="proprietaire_prenom">Prénom</label>
+                            <input class="if-none" type="text" placeholder="Prénom du propriétaire" id="proprietaire_prenom" name="proprietaire_prenom"/>
+                            <label class="if-none" for="nom_entreprise">Raison sociale</label>
+                            <input class="if-none" type="text" placeholder="Raison sociale" id="nom_entreprise" name="nom_entreprise"/>
+                            <label class="if-none" for="proprietaire_adresse">Adresse</label>
+                            <input class="if-none" type="text" placeholder="Adresse du propriétaire" id="proprietaire_adresse" name="proprietaire_adresse"/>
+                        </fieldset>
+                        <fieldset>
+                            <legend>Logement</legend>
+                            <select id="type_logement">
+                                <option value="0">Maison</option>
+                                <option value="1">Appartement</option>
+                            </select>
+                            <label for="surface">Surface</label>
+                            <input type="number" placeholder="Surface" id="surface" name="surface"/>
+                            <label for="nb_pieces">Nombre de pièces</label>
+                            <input type="number" placeholder="Nombre de pièces" id="nb_pieces" name="nb_pieces"/>
+                            <label for="chauffage">Chauffage</label>
+                            <select id="chauffage">
+                                <option value="fuel">Fuel</option>
+                                <option value="électricité">Electricité</option>
+                            </select>
+                            <label for=date_construction>Année de construction</label>
+                            <input type="number" placeholder="Année de construction" id="date_construction" name="date_construction"/>
+                            <label for="n_voie">Numéro de voie</label>
+                            <input type="number" placeholder="Numéro de voie" id="n_voie" name="n_voie"/>
+                            <label for="voie">Voie</label>
+                            <input type="text" placeholder="Voie" id="voie" name="voie"/>
+                            <label for="cp">Code postal</label>
+                            <input type="text" placeholder="Code postal" id="cp" name="cp"/>
+                            <label for="ville">Ville</label>
+                            <input type="text" placeholder="Ville" id="ville" name="ville"/>
+                        </fieldset>
+                        <div>
+                            <button id="send_register" class="button-primary">Envoyer</button>
+                            <a class="button button-clear" action="cancel-modal">Annuler</a>
+                        </div>
                     </form>
                 </header>
                 <footer>
