@@ -18,7 +18,7 @@ function onDashboardAdmin(data) {
 
     onArrayAdmin('table-releve-admin', data)
 
-    Polling.instance.send();
+    Polling.send();
 }
 
 function onArrayAdmin(tableId, data) {

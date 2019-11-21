@@ -3,11 +3,6 @@ import Backend from "./Backend";
 import {clean} from "./dom";
 import { onForget } from "./forget";
 
-// "Model" of response
-interface ResponseApi {
-  name: string;
-}
-
 const bootFront = () => {
 // This is the bootstrapping function of the frontend
   const url = new URL(window.location.href);
