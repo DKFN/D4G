@@ -1,5 +1,7 @@
 import { clean, bind } from "./dom";
+import { onDetails } from "./details";
 import { $ } from "./dollard";
+import Polling from "./Polling";
 
 function onDashboard(data) {
     clean('page-dashboard-user');
@@ -11,7 +13,14 @@ function onDashboard(data) {
         'pieces': data.nb_pieces + ' pièce' + (data.nb_pieces != '1' ? 's' : '') || 'Non renseignée',
         'ville': data.ville || 'Non renseignée'
     });
+
+    dashboard.querySelector('[action="open-modal"]').onclick = () => {
+        onDetails(dashboard, data.foyer)
+    };
+
     onArrayUser('table-releve-user', data);
+
+    Polling.instance.send();
 }
 
 function onDashboardAdmin(data) {
@@ -34,6 +43,7 @@ function onArrayUser(tableId, data) {
     });
 }
 
+
 function onArrayAdmin(tableId, data) {
     const table: HTMLTableElement = <HTMLTableElement> $.id(tableId);
 
@@ -53,4 +63,5 @@ function onArrayAdmin(tableId, data) {
        cellButton.innerHTML = '<a href="#">Plus</a>';
     });
 }
+
 export { onDashboard, onDashboardAdmin };

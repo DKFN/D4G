@@ -16,7 +16,8 @@ use lettre::smtp::ConnectionReuseParameters;
 use native_tls::{Protocol, TlsConnector};
 use lettre_email::{Email};
 use regex::Regex;
-use actix_web::{web, HttpResponse, Error, error};
+use actix_web::{web, HttpResponse, HttpRequest, Error, error};
+use actix_web::http::{header, StatusCode};
 use std::cell::Cell;
 use futures::{Future, Stream};
 use futures::future::{Either, err};
@@ -34,6 +35,23 @@ pub fn sources() -> Result<NamedFile, actix_web::Error> {
     Ok(NamedFile::open(path)?)
 }
 
+pub fn verify(_req: HttpRequest, path: web::Path<(String,)>) -> HttpResponse {
+    let token = path.0.clone();
+    let conn = connect_ddb();
+
+    let rows = conn.prepare("SELECT active FROM utilisateur where token=$1").unwrap()
+        .query(&[&token]).unwrap();
+
+    if !rows.is_empty() {
+        conn.prepare("UPDATE utilisateur SET active = $1, token = NULL where token=$2").unwrap()
+            .query(&[&true, &token]).unwrap();
+    }
+
+    HttpResponse::build(StatusCode::TEMPORARY_REDIRECT)
+        .header(header::LOCATION, "/")
+        .finish()
+}
+
 pub fn connect_ddb() -> Connection{
     Connection::connect("postgresql://d4g:Design4Green@172.17.0.3:5432", TlsMode::None).unwrap()
 }
@@ -42,10 +60,10 @@ pub fn register(username: String, password: String, logement: Logement) -> Strin
     let conn = connect_ddb();
     let result;
 
-    let row = conn.prepare("SELECT active FROM utilisateur where login=$1").unwrap()
+    let rows = conn.prepare("SELECT active FROM utilisateur where login=$1").unwrap()
         .query(&[&username]).unwrap();
 
-    if !row.is_empty() {
+    if !rows.is_empty() {
         result = "User already exist".to_string();
     } else {
         let token = nanoid::simple();
@@ -105,8 +123,8 @@ pub fn register(username: String, password: String, logement: Logement) -> Strin
         conn.prepare("INSERT INTO locataire VALUES ($1, $2, $3)").unwrap()
             .query(&[&foyer, &logement.locataire.nom, &logement.locataire.prenom]).unwrap();
 
-        conn.prepare("INSERT INTO utilisateur VALUES ($1, $2, $3, $4, $5)").unwrap()
-            .query(&[&foyer, &username, &password, &!username_is_email, &token]).unwrap();
+        conn.prepare("INSERT INTO utilisateur VALUES ($1, $2, $3, $4, $5, $6)").unwrap()
+            .query(&[&foyer, &username, &password, &!username_is_email, &token, &false]).unwrap();
 
         result = "Check your mail to verify your account".to_string()
     }
@@ -173,29 +191,36 @@ pub fn retrive_logement_admin() -> Vec<Resume>{
                                             order by l.foyer asc;").unwrap().query(&[]).unwrap();
 
     rows.iter().map( | row | {
+        let maybe_societe: Option<String> = row.get(5);
+        let nom: String = row.get(6);
+        let prenom: String = row.get( 7);
+        let pnom: Option<String> = row.get(3);
+        let pprenom: Option<String> = row.get(4);
         Resume {
             foyer: row.get(0),
             l_type: row.get(1),
             ville: row.get(2),
-            proprietaire_nom: row.get(3),
-            proprietaire_prenom: row.get(4),
-            proprietaire_societe: row.get(5),
-            locataire_nom: row.get(6),
-            locataire_prenom: row.get(7),
+            locataire: format!("{} {}", &nom, &prenom),
+            proprietaire: maybe_societe.unwrap_or(format!("{} {}", &pnom.unwrap_or_default(), &pprenom.unwrap_or_default())),
         }
     }).collect()
 }
-pub fn login(query:LoginQuery) -> Value {
+
+pub fn login(query: &LoginQuery) -> (Value, bool, bool) {
+    // TODO: Add tuple as return to have all datas to give to ctx
     let mut ret: Value = json!({
             "topic": "ko-login",
             "data": {
                 "message": "Unhandled server exception"
             }
         });
+    let mut is_admin = false;
+    let mut conn_ok = false;
     let conn = connect_ddb();
     let rows = conn.prepare("SELECT active, foyer, admin FROM utilisateur where login=$1 AND password=$2").unwrap()
         .query(&[&query.login, &query.password]).unwrap();
     if !rows.is_empty() {
+
         let row = rows.get(0);
         let active : bool = row.get(0);
         if active {
@@ -211,14 +236,16 @@ pub fn login(query:LoginQuery) -> Value {
                 println!("Admin connecte");
                 let result : Vec<Resume> = retrive_logement_admin();
                 ret = json!({"topic": "ok-login-admin", "data" : result});
+                is_admin = true;
             }
+            conn_ok = true;
         } else {
             ret = json!({ "topic": "ko-login", "data": { "message": "Account not validated" }});
         }
     } else {
             ret = json!({ "topic": "ko-login", "data": { "message": "Username or password incorrect" }});
         }
-    ret
+    (ret, conn_ok, is_admin)
 }
 
 // D4G2019  vTbKanJFMiToP

@@ -10,7 +10,7 @@ use actix::{StreamHandler, Actor};
 use serde_json::Value;
 use serde_json::json;
 use crate::model::{Logement};
-use crate::controllers::{index, login, register, sources, upload};
+use crate::controllers::{index, login, register, sources, upload, verify};
 use std::cell::Cell;
 use actix_files as afs;
 
@@ -38,19 +38,26 @@ pub struct RegisterQuery {
 
 // do websocket handshake and start actor
 fn ws_index(req: HttpRequest, stream: web::Payload) -> Result<HttpResponse, actix_web::Error> {
-    ws::start(Ws, &req,  stream)
+    ws::start(Ws { uname: "".to_string(), is_admin: false, foyers: vec![], auth: false }, &req, stream)
 }
 
-struct Ws;
+pub struct Ws {
+    pub uname: String,
+    pub is_admin: bool,
+    pub foyers: Vec<String>,
+    pub auth: bool
+}
 
 impl Actor for Ws {
     type Context = ws::WebsocketContext<Self>;
 }
 
+
 // Handler for ws::Message messages
 impl StreamHandler<ws::Message, ws::ProtocolError> for Ws {
 
     fn handle(&mut self, msg: ws::Message, ctx: &mut Self::Context) {
+        println!("RQ CTX {} | AUTH ? {} |  ADMIN ? {}", self.uname, self.auth, self.is_admin);
         match msg {
             ws::Message::Ping(msg) => {
                 println!("Ping {}", msg);
@@ -62,7 +69,14 @@ impl StreamHandler<ws::Message, ws::ProtocolError> for Ws {
                 let request: SocketMessage = serde_json::from_str(&text).unwrap();
                 match request.topic.as_str() {
                     "try-login" => {
-                        let response: Value = login(serde_json::from_value(request.data).unwrap());
+                        let data: LoginQuery = serde_json::from_value(request.data).unwrap();
+                        let (response, connection_ok, is_admin): (Value, bool, bool) = login(&data);
+                        if connection_ok {
+                            self.uname = data.login.clone();
+                            self.auth = true;
+                            self.is_admin = is_admin.clone();
+                        }
+
                         ctx.text(response.to_string());
                     },
                     "register" => {
@@ -81,7 +95,7 @@ impl StreamHandler<ws::Message, ws::ProtocolError> for Ws {
 }
 
 pub struct AppState {
-    pub counter: Cell<usize>,
+    pub counter: Cell<usize>
 }
 
 pub fn main() {
@@ -108,6 +122,7 @@ pub fn main() {
             .wrap(middleware::Compress::default())
             .wrap(Logger::default())
             .route("/", web::get().to(index))
+            .service(web::resource("/verify/{token}").route(web::get().to(verify)))
             .route("/source.zip", web::get().to(sources))
             .route("/socket", web::get().to(ws_index))
             .route("/file", web::post().to_async(upload))

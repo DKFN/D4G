@@ -53,6 +53,7 @@ RUN mkdir /public; \
     apt-get update && \
     apt-get install -y --no-install-recommends apt-utils openssl ca-certificates
 
+RUN rm -rf /public || true
 RUN mkdir /public;\
     mkdir /public/uploads; \
     mkdir /public/front
