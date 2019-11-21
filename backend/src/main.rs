@@ -9,8 +9,8 @@ use actix;
 use actix::{StreamHandler, Actor};
 use serde_json::Value;
 use serde_json::json;
-use crate::model::{Logement, AddReleve};
-use crate::controllers::{index, login, register, sources, upload, verify, info_logement, user_retrieve_datas_from_polling, forget_password, add_releve, renew_password};
+use crate::model::{Logement, AddReleve, Resume};
+use crate::controllers::{index, login, register, sources, upload, verify, info_logement, user_retrieve_datas_from_polling, forget_password, add_releve, foyer_retrieve_datas_from_polling, retrive_logement_admin, renew_password};
 use std::cell::Cell;
 use actix_files as afs;
 
@@ -36,7 +36,7 @@ pub struct ForgetPassword {
 
 #[derive(Deserialize, Serialize)]
 pub struct InfoLogement {
-    foyer: String
+    foyer: Option<String>
 }
 
 #[derive(Deserialize, Serialize)]
@@ -133,7 +133,7 @@ impl StreamHandler<ws::Message, ws::ProtocolError> for Ws {
                     },
                     "info-logement" => {
                         let data: InfoLogement = serde_json::from_value(request.data).unwrap();
-                        let response: Logement = info_logement(&data);
+                        let response: Logement = info_logement(&data.foyer.unwrap());
                         self.latest_sent = serde_json::to_string(&response).unwrap().clone();
                         ctx.text(json!({ "topic": "ok-info", "data": response}).to_string());
                     },
@@ -148,13 +148,24 @@ impl StreamHandler<ws::Message, ws::ProtocolError> for Ws {
                                 println!("ADMIN POLL");
                                 let data: InfoLogement = serde_json::from_value(request.data).unwrap();
                                 // TODO: Check if foyer. If not then we need to poll info logements
-                                let response = info_logement(&data);
-                                let cache_valid = self.latest_sent == serde_json::to_string(&response)
-                                    .unwrap().clone();
-                                println!("CACHE VALID ? {}", cache_valid);
-                                if !cache_valid {
-                                    self.latest_sent = serde_json::to_string(&response).unwrap().clone();
-                                    ctx.text(json!({ "topic": "ok-info", "data": response}).to_string());
+                                if data.foyer.is_some() {
+                                    let logement = data.foyer.unwrap();
+                                    let response = info_logement(&logement);
+                                    let cache_valid = self.latest_sent == serde_json::to_string(&response)
+                                        .unwrap().clone();
+                                    println!("CACHE VALID ? {}", cache_valid);
+                                    if !cache_valid {
+                                        self.latest_sent = serde_json::to_string(&response).unwrap().clone();
+                                        ctx.text(json!({ "topic": "ok-info", "data": response}).to_string());
+                                    }
+                                } else {
+                                    let result : Vec<Resume> = retrive_logement_admin();
+                                    let cache_valid = self.latest_sent == serde_json::to_string(&result).unwrap().clone();
+                                    println!("CACHE VALID ? {}", cache_valid);
+                                    if !cache_valid {
+                                        self.latest_sent = serde_json::to_string(&result).unwrap().clone();
+                                        ctx.text(json!({ "topic": "poll-data", "data": result}).to_string());
+                                    }
                                 }
                             } else {
                                 let uname = self.uname.clone();
