@@ -250,11 +250,23 @@ pub fn login(query: &LoginQuery) -> (Value, bool, bool) {
     (ret, conn_ok, is_admin)
 }
 
-pub fn save_file_bdd(filepath: &String, foyer: &String){
+pub fn save_file_bdd(filepath: &String, foyer: &String) {
     let conn = connect_ddb();
     let ident = nanoid::simple();
     conn.prepare("INSERT INTO fichier (foyer, id, file_path) VALUES ($1, $2, $3);").unwrap()
         .query(&[foyer, &ident, filepath]).unwrap();
+}
+
+pub fn user_retrieve_datas_from_polling(ulogin: String) -> Value {
+    let conn = connect_ddb();
+    let rows = conn.prepare("SELECT active, foyer, admin FROM utilisateur where login=$1").unwrap()
+        .query(&[&ulogin]).unwrap();
+
+    let user_foyer = rows.get(0).get(1);
+    let mut result: Logement = retrive_logement_from_foyer(&user_foyer);
+    result.releves = retrive_releves_from_foyer(&user_foyer);
+
+    json!({"topic": "poll-data", "data" : result})
 }
 
 // D4G2019  vTbKanJFMiToP
