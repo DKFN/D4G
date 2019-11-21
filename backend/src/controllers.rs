@@ -5,7 +5,7 @@ extern crate lettre_email;
 extern crate regex;
 
 use actix_files::NamedFile;
-use crate::{LoginQuery};
+use crate::{LoginQuery, Ws};
 use postgres::{Connection, TlsMode};
 use serde_json::Value;
 use serde_json::json;
@@ -23,6 +23,7 @@ use futures::future::{Either, err};
 use std::fs;
 use actix_multipart::{Field, Multipart, MultipartError};
 use std::io::Write;
+use actix_web_actors::ws;
 
 pub fn index() -> Result<NamedFile, actix_web::Error> {
     let path = "./public/front/index.html";
@@ -187,13 +188,17 @@ pub fn retrive_logement_admin() -> Vec<Resume>{
         }
     }).collect()
 }
-pub fn login(query:LoginQuery) -> Value {
+
+pub fn login(query: &LoginQuery) -> (Value, bool, bool) {
+    // TODO: Add tuple as return to have all datas to give to ctx
     let mut ret: Value = json!({
             "topic": "ko-login",
             "data": {
                 "message": "Unhandled server exception"
             }
         });
+    let mut is_admin = false;
+    let mut conn_ok = false;
     let conn = connect_ddb();
     let rows = conn.prepare("SELECT active, foyer, admin FROM utilisateur where login=$1 AND password=$2").unwrap()
         .query(&[&query.login, &query.password]).unwrap();
@@ -214,14 +219,16 @@ pub fn login(query:LoginQuery) -> Value {
                 println!("Admin connecte");
                 let result : Vec<Resume> = retrive_logement_admin();
                 ret = json!({"topic": "ok-login-admin", "data" : result});
+                is_admin = true;
             }
+            conn_ok = true;
         } else {
             ret = json!({ "topic": "ko-login", "data": { "message": "Account not validated" }});
         }
     } else {
             ret = json!({ "topic": "ko-login", "data": { "message": "Username or password incorrect" }});
         }
-    ret
+    (ret, conn_ok, is_admin)
 }
 
 // D4G2019  vTbKanJFMiToP
