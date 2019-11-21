@@ -116,7 +116,7 @@ class Backend {
     };
 
     if (data) {
-      object.foyer = data;
+      object.data.foyer = data;
     }
 
     this.send(
