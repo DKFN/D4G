@@ -4,8 +4,9 @@ extern crate lettre;
 extern crate lettre_email;
 extern crate regex;
 
+
 use actix_files::NamedFile;
-use crate::{LoginQuery, Ws};
+use crate::{LoginQuery, ForgetPassword, InfoLogement};
 use postgres::{Connection, TlsMode};
 use serde_json::Value;
 use serde_json::json;
@@ -16,14 +17,14 @@ use lettre::smtp::ConnectionReuseParameters;
 use native_tls::{Protocol, TlsConnector};
 use lettre_email::{Email};
 use regex::Regex;
-use actix_web::{web, HttpResponse, Error, error};
+use actix_web::{web, HttpResponse, Error, error, HttpRequest};
+use actix_web::http::{header, StatusCode};
 use std::cell::Cell;
 use futures::{Future, Stream};
 use futures::future::{Either, err};
 use std::fs;
 use actix_multipart::{Field, Multipart, MultipartError};
 use std::io::Write;
-use actix_web_actors::ws;
 
 pub fn index() -> Result<NamedFile, actix_web::Error> {
     let path = "./public/front/index.html";
@@ -35,18 +36,78 @@ pub fn sources() -> Result<NamedFile, actix_web::Error> {
     Ok(NamedFile::open(path)?)
 }
 
+pub fn verify(_req: HttpRequest, path: web::Path<(String,)>) -> HttpResponse {
+    let token = path.0.clone();
+    let conn = connect_ddb();
+
+    let rows = conn.prepare("SELECT active FROM utilisateur where token=$1").unwrap()
+        .query(&[&token]).unwrap();
+
+    if !rows.is_empty() {
+        conn.prepare("UPDATE utilisateur SET active = $1, token = NULL where token=$2").unwrap()
+            .query(&[&true, &token]).unwrap();
+    }
+
+    HttpResponse::build(StatusCode::TEMPORARY_REDIRECT)
+        .header(header::LOCATION, "/")
+        .finish()
+}
+
 pub fn connect_ddb() -> Connection{
     Connection::connect("postgresql://d4g:Design4Green@172.17.0.3:5432", TlsMode::None).unwrap()
+}
+
+pub fn send_email(subject: String, mail: String, message: String) {
+
+    let address = std::env::var("SMTP_ADDRESS").unwrap_or("smtp.gmail.com".to_string());
+
+    let email = Email::builder()
+        .to(mail)
+        .from(("bot@vps753500.ovh.net", "Green Jiraration"))
+        .subject(subject)
+        .text(message)
+        .build()
+        .unwrap();
+
+    let mut tls_builder = TlsConnector::builder();
+    tls_builder.min_protocol_version(Some(Protocol::Tlsv10));
+
+    let tls_parameters = ClientTlsParameters::new(
+        address.to_string(),
+        tls_builder.build().unwrap()
+    );
+
+    let mut mailer = SmtpClient::new(
+        (address.as_str(), 465),
+        ClientSecurity::Wrapper(tls_parameters)
+    ).unwrap()
+        .authentication_mechanism(Mechanism::Login)
+        .credentials(Credentials::new(
+            std::env::var("SMTP_USERNAME").unwrap_or("user".to_string()),
+            std::env::var("SMTP_PASSWORD").unwrap_or("password".to_string())
+        ))
+        .connection_reuse(ConnectionReuseParameters::ReuseUnlimited)
+        .transport();
+
+    let result = mailer.send(email.into());
+
+    if result.is_ok() {
+        println!("Email sent");
+    } else {
+        println!("Could not send email: {:?}", result);
+    }
+
+    mailer.close();
 }
 
 pub fn register(username: String, password: String, logement: Logement) -> String {
     let conn = connect_ddb();
     let result;
 
-    let row = conn.prepare("SELECT active FROM utilisateur where login=$1").unwrap()
+    let rows = conn.prepare("SELECT active FROM utilisateur where login=$1").unwrap()
         .query(&[&username]).unwrap();
 
-    if !row.is_empty() {
+    if !rows.is_empty() {
         result = "User already exist".to_string();
     } else {
         let token = nanoid::simple();
@@ -55,45 +116,7 @@ pub fn register(username: String, password: String, logement: Logement) -> Strin
 
         if username_is_email {
             let domain = std::env::var("DOMAIN").unwrap_or("localhost".to_string());
-            let address = std::env::var("SMTP_ADDRESS").unwrap_or("smtp.gmail.com".to_string());
-
-            let email = Email::builder()
-                .to(username.clone())
-                .from(("bot@vps753500.ovh.net", "Green Jiraration"))
-                .subject("Hi, activate your account")
-                .text(format!("http://{}/verify/{}", domain, token))
-                .build()
-                .unwrap();
-
-            let mut tls_builder = TlsConnector::builder();
-            tls_builder.min_protocol_version(Some(Protocol::Tlsv10));
-
-            let tls_parameters = ClientTlsParameters::new(
-                address.to_string(),
-                tls_builder.build().unwrap()
-            );
-
-            let mut mailer = SmtpClient::new(
-                (address.as_str(), 465),
-                ClientSecurity::Wrapper(tls_parameters)
-            ).unwrap()
-                .authentication_mechanism(Mechanism::Login)
-                .credentials(Credentials::new(
-                    std::env::var("SMTP_USERNAME").unwrap_or("user".to_string()),
-                    std::env::var("SMTP_PASSWORD").unwrap_or("password".to_string())
-                ))
-                .connection_reuse(ConnectionReuseParameters::ReuseUnlimited)
-                .transport();
-
-            let result = mailer.send(email.into());
-
-            if result.is_ok() {
-                println!("Email sent");
-            } else {
-                println!("Could not send email: {:?}", result);
-            }
-
-            mailer.close();
+            send_email("Hi, activate your account".to_string(), username.clone(), format!("http://{}/verify/{}", domain, token))
         }
 
         let foyer = nanoid::generate(16); // We generate an id of 16 char because of database typing
@@ -106,8 +129,8 @@ pub fn register(username: String, password: String, logement: Logement) -> Strin
         conn.prepare("INSERT INTO locataire VALUES ($1, $2, $3)").unwrap()
             .query(&[&foyer, &logement.locataire.nom, &logement.locataire.prenom]).unwrap();
 
-        conn.prepare("INSERT INTO utilisateur VALUES ($1, $2, $3, $4, $5)").unwrap()
-            .query(&[&foyer, &username, &password, &!username_is_email, &token]).unwrap();
+        conn.prepare("INSERT INTO utilisateur VALUES ($1, $2, $3, $4, $5, $6)").unwrap()
+            .query(&[&foyer, &username, &password, &!username_is_email, &token, &false]).unwrap();
 
         result = "Check your mail to verify your account".to_string()
     }
@@ -189,6 +212,17 @@ pub fn retrive_logement_admin() -> Vec<Resume>{
     }).collect()
 }
 
+pub fn info_logement(query: &InfoLogement) -> Logement {
+    let mut result: Logement = retrive_logement_from_foyer(&query.foyer);
+    result.releves = retrive_releves_from_foyer(&query.foyer);
+    result
+}
+
+/*pub fn forget_password(_query: &ForgetPassword) -> Value {
+    Value
+}*/
+
+
 pub fn login(query: &LoginQuery) -> (Value, bool, bool) {
     // TODO: Add tuple as return to have all datas to give to ctx
     let mut ret: Value = json!({
@@ -231,11 +265,34 @@ pub fn login(query: &LoginQuery) -> (Value, bool, bool) {
     (ret, conn_ok, is_admin)
 }
 
+pub fn save_file_bdd(filepath: &String, foyer: &String) {
+    let conn = connect_ddb();
+    let ident = nanoid::simple();
+    conn.prepare("INSERT INTO fichier (foyer, id, file_path) VALUES ($1, $2, $3);").unwrap()
+        .query(&[foyer, &ident, filepath]).unwrap();
+}
+
+pub fn user_retrieve_datas_from_polling(ulogin: String) -> Value {
+    let conn = connect_ddb();
+    let rows = conn.prepare("SELECT active, foyer, admin FROM utilisateur where login=$1").unwrap()
+        .query(&[&ulogin]).unwrap();
+
+    let user_foyer = rows.get(0).get(1);
+    let mut result: Logement = retrive_logement_from_foyer(&user_foyer);
+    result.releves = retrive_releves_from_foyer(&user_foyer);
+
+    json!({"topic": "poll-data", "data" : result})
+}
+
 // D4G2019  vTbKanJFMiToP
-pub fn save_file(field: Field) -> impl Future<Item = i64, Error = Error> {
+pub fn save_file(field: Field, foyer: String) -> impl Future<Item = i64, Error = Error> {
 
     // TODO: Generate something
-    let file_path_string = "/public/uploads/test.pdf";
+
+    let filename: String = field.content_disposition().unwrap().get_filename().unwrap().to_string()
+        .replace(' ', "_").to_string();
+    let file_path_string = format!("/public/uploads/{}", filename);
+    save_file_bdd(&file_path_string, &foyer);
     let file = match fs::File::create(file_path_string) {
         Ok(file) => file,
         Err(e) => return Either::A(err(error::ErrorInternalServerError(e))),
@@ -268,16 +325,16 @@ pub fn save_file(field: Field) -> impl Future<Item = i64, Error = Error> {
     )
 }
 
-pub fn upload(
-    multipart: Multipart,
-    counter: web::Data<Cell<usize>>,
-) -> impl Future<Item = HttpResponse, Error = Error> {
+pub fn upload(multipart: Multipart, counter: web::Data<Cell<usize>>, foyer : actix_web::web::Path<String>) -> impl Future<Item = HttpResponse, Error = Error> {
     counter.set(counter.get() + 1);
     println!("{:?}", counter.get());
-
+    let q = foyer.into_inner();
     multipart
         .map_err(error::ErrorInternalServerError)
-        .map(|field| save_file(field).into_stream())
+        .map(move |field| {
+            let r = q.clone();
+            save_file(field, r).into_stream()
+        })
         .flatten()
         .collect()
         .map(|sizes| HttpResponse::Ok().json(sizes))

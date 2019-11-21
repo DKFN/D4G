@@ -102,8 +102,15 @@ CREATE TABLE public.utilisateur (
     admin boolean NOT NULL
 );
 
-
 ALTER TABLE public.utilisateur OWNER TO d4g;
+
+CREATE TABLE public.fichier (
+    foyer character varying(16) NOT NULL,
+    id integer NOT NULL,
+    file_path character varying (255) NOT NULL
+);
+
+ALTER TABLE public.fichier OWNER TO d4g;
 
 --
 -- Data for Name: locataire; Type: TABLE DATA; Schema: public; Owner: d4g
@@ -145,6 +152,8 @@ COPY public.utilisateur (foyer, login, password, active, admin) FROM stdin;
 \.
 
 
+COPY public.fichier (id, foyer, file_path) FROM stdin;
+\.
 --
 -- Name: locataire locataire_pkey; Type: CONSTRAINT; Schema: public; Owner: d4g
 --
@@ -185,6 +194,10 @@ ALTER TABLE ONLY public.utilisateur
     ADD CONSTRAINT utilisateur_pkey PRIMARY KEY (login);
 
 --
+
+ALTER TABLE ONLY public.fichier
+    ADD CONSTRAINT fichier_pkey PRIMARY KEY (id);
+
 -- Name: proprietaire logement_proprietaire_fk; Type: FK CONSTRAINT; Schema: public; Owner: d4g
 --
 
@@ -200,10 +213,8 @@ ALTER TABLE ONLY public.releve
     ADD CONSTRAINT logement_releve_fk FOREIGN KEY (foyer) REFERENCES public.logement(foyer) ON UPDATE CASCADE ON DELETE CASCADE;
 
 
---
--- Name: utilisateur logement_utilisateur_fk; Type: FK CONSTRAINT; Schema: public; Owner: d4g
---
+ALTER TABLE ONLY public.fichier
+    ADD CONSTRAINT logement_fichier_fk FOREIGN KEY (foyer) REFERENCES public.logement(foyer) ON UPDATE CASCADE ON DELETE CASCADE;
 
---
--- PostgreSQL database dump complete
+
 --

@@ -3,9 +3,10 @@ import { onDetails } from "./details";
 import { $ } from "./dollard";
 import Polling from "./Polling";
 
-function onDashboard(data, admin) {
+function onDashboard(data) {
     clean('page-dashboard-user');
     const dashboard = $.id('page-dashboard-user');
+
     bind(dashboard, {
         'proprietaire': data.proprietaire.societe || data.proprietaire.prenom + ' ' + data.proprietaire.nom,
         'locataire': data.locataire.prenom + ' ' + data.locataire.nom,
@@ -17,13 +18,25 @@ function onDashboard(data, admin) {
         onDetails(dashboard, data.foyer)
     };
 
-    onArray(data);
+    onArrayUser('table-releve-user', data);
 
     Polling.instance.send();
 }
 
-function onArray(data) {
-    const table: HTMLTableElement = <HTMLTableElement> $.id('table-releve-user');
+function onArrayUser(tableId, data) {
+    const table: HTMLTableElement = <HTMLTableElement> $.id(tableId);
+
+    while (table.hasChildNodes()) {
+        table.removeChild(table.firstChild);
+    }
+
+    let rowHead: HTMLTableRowElement = <HTMLTableRowElement> table.insertRow();
+    const head = [ "Date", "Relevé", "Evolution" ];
+    head.forEach(function (item) {
+       let cell: HTMLTableCellElement = <HTMLTableCellElement> document.createElement("th");
+       cell.innerHTML = item;
+       rowHead.appendChild(cell);
+    });
 
     const reversed = data.releves.reverse();
     reversed.forEach(function(item, index) {

@@ -27,7 +27,7 @@ class Backend {
   }
 
   onmessage(event: MessageEvent): void {
-    console.info(event);
+    console.info(arguments);
 
     const json = JSON.parse(event.data);
     switch (json.topic) {
@@ -41,6 +41,14 @@ class Backend {
 
       case "ok-login":
         onLogin(json.data, true);
+        break;
+
+      case "ok-login-admin":
+        onLogin(json.data, true, true);
+        break;
+
+      case "ok-info":
+        onDashboard(json.data);
         break;
     }
   }
@@ -97,6 +105,15 @@ class Backend {
         data: ""
       })
     );
+  }
+
+  infoLogement(foyer) {
+    this.send(
+        JSON.stringify({
+          topic: "info-logement",
+          data: { foyer }
+        })
+    )
   }
 
   send(message: string): void {
