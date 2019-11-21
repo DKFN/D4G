@@ -352,6 +352,10 @@ pub fn user_retrieve_datas_from_polling(ulogin: String) -> Value {
         .query(&[&ulogin]).unwrap();
 
     let user_foyer = rows.get(0).get(1);
+    foyer_retrieve_datas_from_polling(&user_foyer)
+}
+
+pub fn foyer_retrieve_datas_from_polling(user_foyer: &String) -> Value {
     let mut result: Logement = retrive_logement_from_foyer(&user_foyer);
     result.releves = retrive_releves_from_foyer(&user_foyer);
 

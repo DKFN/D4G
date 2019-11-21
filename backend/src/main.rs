@@ -134,6 +134,7 @@ impl StreamHandler<ws::Message, ws::ProtocolError> for Ws {
                     "info-logement" => {
                         let data: InfoLogement = serde_json::from_value(request.data).unwrap();
                         let response: Logement = info_logement(&data);
+                        self.latest_sent = serde_json::to_string(&response).unwrap().clone();
                         ctx.text(json!({ "topic": "ok-info", "data": response}).to_string());
                     },
                     "add-releve" => {
@@ -144,7 +145,17 @@ impl StreamHandler<ws::Message, ws::ProtocolError> for Ws {
                     "poll-data" => {
                         if self.auth {
                             if self.is_admin {
-                                ctx.text("ADMIN");
+                                println!("ADMIN POLL");
+                                let data: InfoLogement = serde_json::from_value(request.data).unwrap();
+                                // TODO: Check if foyer. If not then we need to poll info logements
+                                let response = info_logement(&data);
+                                let cache_valid = self.latest_sent == serde_json::to_string(&response)
+                                    .unwrap().clone();
+                                println!("CACHE VALID ? {}", cache_valid);
+                                if !cache_valid {
+                                    self.latest_sent = serde_json::to_string(&response).unwrap().clone();
+                                    ctx.text(json!({ "topic": "ok-info", "data": response}).to_string());
+                                }
                             } else {
                                 let uname = self.uname.clone();
                                 let polled_datas = user_retrieve_datas_from_polling(uname);
