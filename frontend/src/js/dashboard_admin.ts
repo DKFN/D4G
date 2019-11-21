@@ -1,6 +1,7 @@
 import {clean} from "./dom";
 import {$} from "./dollard";
-
+import "./Backend";
+import backend from "./Backend";
 
 function onDashboardAdmin(data) {
     clean('page-dashboard-admin');
@@ -17,13 +18,17 @@ function onArrayAdmin(tableId, data) {
         let cellType: HTMLTableCellElement = <HTMLTableCellElement> row.insertCell();
         let cellVille: HTMLTableCellElement = <HTMLTableCellElement> row.insertCell();
         let cellLocataire: HTMLTableCellElement = <HTMLTableCellElement> row.insertCell();
-        let cellProprietaire: HTMLTableCellElement = <HTMLTableCellElement> row.insertCell();
-        let cellButton: HTMLTableCellElement = <HTMLTableCellElement> row.insertCell();
+        let cellProprietaire: HTMLTableCellElement = <HTMLTableCellElement> row.insertCell()
+
         cellFoyer.innerHTML = item.foyer;
         cellType.innerHTML = item.l_type;
         cellVille.innerHTML = item.ville;
         cellLocataire.innerHTML = item.locataire;
         cellProprietaire.innerHTML = item.proprietaire;
+
+        row.addEventListener("click", (() => {
+            backend.infoLogement(item.foyer);
+        }))
     });
 }
 
