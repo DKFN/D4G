@@ -111,7 +111,7 @@ class Backend {
     this.send(
         JSON.stringify({
           topic: "info-logement",
-          data: foyer
+          data: { foyer }
         })
     )
   }
