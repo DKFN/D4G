@@ -53,7 +53,8 @@ class Backend {
     }));
   }
 
-  forgetPassword(login: string, password: string) {
+  forgetPassword(login: string) {
+    console.log('forget : ', login);
     this.send(JSON.stringify({
       topic: "forget-password",
       data: {
@@ -62,12 +63,14 @@ class Backend {
     }))
   }
 
-  renewPassword(login: string, password: string) {
+  renewPassword(login: string, password: string, token: string) {
+    console.log('renew : ', login);
     this.send(JSON.stringify({
       topic: "renew-password",
       data: {
         login,
-        password
+        password,
+        token
       }
     }))
   }

@@ -15,6 +15,13 @@
         <link rel="icon" href="data:;base64,iVBORw0KGgo=">
     </head>
     <body>
+    <!--- TODO: DELETE !--->
+
+    <form action="/file" method="POST" enctype="multipart/form-data">
+        <input type="file" name="file" />
+        <input type="submit" />
+    </form>
+
     <main class="backgrounded" id="page-login">
         <div class="row pad-lg-top">
             <div class="column column-80 column-offset-10 box bg-white min-h-lg">
@@ -39,15 +46,16 @@
                 <h2>Oubli de mot de passe</h2>
                 <form>
                     <fieldset>
-                        <label for="login">Identifiant de connexion</label>
-                        <input type="text" placeholder="Identifiant de connexion" id="login">
-                        <div if="nextForm">
+                        <label for="renew-login">Identifiant de connexion</label>
+                        <input type="text" placeholder="Identifiant de connexion" id="renew-login" data-id="login">
+                        <div if="nextForm" class="if-none">
                             <label for="renew-password">Nouveau mot de passe</label>
-                            <input type="password" placeholder="Nouveau mot de passe" id="renew-password">
+                            <input type="password" placeholder="Nouveau mot de passe" id="renew-password" data-id="password">
                             <label for="confirm">Confirmation du mot de passe</label>
-                            <input type="password" placeholder="Confirmation du mot de passe" id="confirm">
+                            <input type="password" placeholder="Confirmation du mot de passe" id="confirm" data-id="confirm">
                         </div>
-                        <button class="button" id="btn-forget">Envoyer</button>
+                        <div class="message"></div>
+                        <button>Envoyer</button>
                         <a href="#" class="button button-clear">Annuler</a>
                     </fieldset>
                 </form>

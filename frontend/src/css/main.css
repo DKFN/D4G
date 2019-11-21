@@ -93,6 +93,10 @@ main.visible {
     padding: 2rem;
 }
 
+.if-none {
+    display: none;
+}
+
 .table-releve {
     max-height: 100vh;
     overflow-y: scroll;
