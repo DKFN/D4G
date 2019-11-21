@@ -1,7 +1,7 @@
 import { $ } from "./dollard";
 import { onDashboard } from "./dashboard";
 
-function onLogin(data, status) {
+function onLogin(data, status, admin=false) {
     const containerMessage = $.id('page-login').getElementsByClassName('message')[0];
 
     if (!status) { // Connexion failed
@@ -10,7 +10,7 @@ function onLogin(data, status) {
     } else {
         containerMessage.classList.add('success');
         containerMessage.innerHTML = '<strong>Connexion approuvée</strong><br>Vous allez être redirigé sous peu.';
-        setTimeout(onDashboard, 1000, data);
+        setTimeout(onDashboard, 1000, data, admin);
     }
 }
 
