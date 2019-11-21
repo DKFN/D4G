@@ -1,10 +1,7 @@
 import Backend from './Backend';
 import { onDashboard } from './dashboard';
-
-interface Releve {
-  date: string;
-  value: string;
-}
+import { onDashboardAdmin } from './dashboard_admin';
+import { $ } from './dollard';
 
 export default class Polling {
   static SEND_TIMEOUT: number = 5000;
@@ -21,15 +18,19 @@ export default class Polling {
     Polling._instance = this;
   }
 
-  send(data="") {
-    if (!this.intervalId) {
-      this.intervalId = setInterval(() => {
-        Backend.pollData(data);
-      }, Polling.SEND_TIMEOUT);
-    }
+  send(data = null) {
+    clearInterval(this.intervalId);
+
+    this.intervalId = setInterval(() => {
+      Backend.pollData(data);
+    }, Polling.SEND_TIMEOUT);
   }
 
   receive(data) {
-    onDashboard(data);
+    if ($.currentPage() === 'page-dashboard-user') {
+      onDashboard(data);
+    } else {
+      onDashboardAdmin(data);
+    }
   }
 }

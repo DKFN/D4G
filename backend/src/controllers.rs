@@ -279,9 +279,9 @@ pub fn retrive_logement_admin() -> Vec<Resume>{
     }).collect()
 }
 
-pub fn info_logement(query: &InfoLogement) -> Logement {
-    let mut result: Logement = retrive_logement_from_foyer(&query.foyer);
-    result.releves = retrive_releves_from_foyer(&query.foyer);
+pub fn info_logement(query: &String) -> Logement {
+    let mut result: Logement = retrive_logement_from_foyer(&query);
+    result.releves = retrive_releves_from_foyer(&query);
     result
 }
 

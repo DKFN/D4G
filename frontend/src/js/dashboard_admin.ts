@@ -2,11 +2,23 @@ import {clean} from "./dom";
 import {$} from "./dollard";
 import "./Backend";
 import backend from "./Backend";
+import Polling from "./Polling";
+import { onRegister, displayProprietaire, get_data } from "./register";
 
 function onDashboardAdmin(data) {
     clean('page-dashboard-admin');
+    const dashboard = $.id('page-dashboard-admin');
     localStorage.setItem('admin-data', data);
+
+    dashboard.querySelector('[action="open-modal"]').onclick = () => {
+        onRegister(dashboard);
+    };
+
+    handle_register_onclick();
+
     onArrayAdmin('table-releve-admin', data)
+
+    Polling.instance.send();
 }
 
 function onArrayAdmin(tableId, data) {
@@ -40,6 +52,22 @@ function onArrayAdmin(tableId, data) {
             backend.infoLogement(item.foyer);
         }))
     });
+}
+
+function handle_register_onclick() {
+    let radio_personne: HTMLInputElement = <HTMLInputElement> $.id("personne");
+    let radio_entreprise: HTMLInputElement = <HTMLInputElement> $.id("entreprise");
+    let send_register: HTMLButtonElement = <HTMLButtonElement> $.id("send_register");
+
+    radio_personne.addEventListener("click", (() => {
+        displayProprietaire("personne");
+    }));
+    radio_entreprise.addEventListener("click", (() => {
+        displayProprietaire("entreprise");
+    }));
+    send_register.addEventListener("click", (() => {
+        get_data();
+    }))
 }
 
 export { onDashboardAdmin }
