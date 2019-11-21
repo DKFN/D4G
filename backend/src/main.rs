@@ -10,7 +10,7 @@ use actix::{StreamHandler, Actor};
 use serde_json::Value;
 use serde_json::json;
 use crate::model::{Logement, AddReleve};
-use crate::controllers::{index, login, register, sources, upload, verify, info_logement, user_retrieve_datas_from_polling, forget_password, add_releve};
+use crate::controllers::{index, login, register, sources, upload, verify, info_logement, user_retrieve_datas_from_polling, forget_password, add_releve, renew_password};
 use std::cell::Cell;
 use actix_files as afs;
 
@@ -49,6 +49,12 @@ pub struct RegisterQuery {
 #[derive(Deserialize)]
 pub struct ForgetPasswordQuery {
     login: String
+}
+
+#[derive(Deserialize)]
+pub struct RenewPasswordQuery {
+    token: String,
+    password: String
 }
 
 // do websocket handshake and start actor
@@ -113,6 +119,16 @@ impl StreamHandler<ws::Message, ws::ProtocolError> for Ws {
                             ctx.text(json!({ "topic": "forget-password", "data": { "error": response }}).to_string());
                         } else {
                             ctx.text(json!({ "topic": "forget-password", "data": { "message": response }}).to_string());
+                        }
+                    },
+                    "renew-password" => {
+                        let data: RenewPasswordQuery = serde_json::from_value(request.data).unwrap();
+                        let (response, is_error) = renew_password(data.token, data.password);
+
+                        if is_error {
+                            ctx.text(json!({ "topic": "renew-password", "data": { "error": response }}).to_string());
+                        } else {
+                            ctx.text(json!({ "topic": "renew-password", "data": { "message": response }}).to_string());
                         }
                     },
                     "info-logement" => {

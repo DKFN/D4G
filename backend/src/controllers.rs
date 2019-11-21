@@ -104,6 +104,27 @@ fn is_email(login: String) -> bool {
     re.is_match(&login)
 }
 
+pub fn renew_password(token: String, password: String) -> (String, bool) {
+    let mut is_error = true;
+    let result;
+
+    let conn = connect_ddb();
+    let rows = conn.prepare("SELECT active FROM utilisateur where token=$1").unwrap()
+        .query(&[&token]).unwrap();
+
+    if rows.is_empty() {
+        result = "Impossible de trouver la demande de réinitialisation de mot de passe".to_string();
+    } else {
+        conn.prepare("UPDATE utilisateur SET password = $1, token = NULL where token=$2").unwrap()
+            .query(&[&password, &token]).unwrap();
+
+        is_error = false;
+        result = "Votre mot de passe a été changé, vous pouvez vous connecter à nouveau".to_string();
+    }
+
+    (result, is_error)
+}
+
 pub fn forget_password(login: String) -> (String, bool) {
     let email = std::env::var("SMTP_USERNAME").unwrap_or("l'administrateur".to_string());
     let mut is_error = true;
@@ -272,12 +293,7 @@ pub fn add_releve(query: &AddReleve) {
 
 pub fn login(query: &LoginQuery) -> (Value, bool, bool) {
     // TODO: Add tuple as return to have all datas to give to ctx
-    let mut ret: Value = json!({
-            "topic": "ko-login",
-            "data": {
-                "message": "Unhandled server exception"
-            }
-        });
+    let ret: Value;
     let mut is_admin = false;
     let mut conn_ok = false;
     let conn = connect_ddb();

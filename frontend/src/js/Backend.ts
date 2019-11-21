@@ -1,7 +1,7 @@
 import { onLogin } from "./login";
 import { onDashboard } from "./dashboard";
 import Polling from "./Polling";
-import { receiveForgetPassword } from "./forget";
+import { receiveForgetPassword, receiveRenewPassword } from "./forget";
 
 class Backend {
   socket: WebSocket = null;
@@ -38,6 +38,10 @@ class Backend {
 
       case "forget-password":
         receiveForgetPassword(json.data);
+        break;
+
+      case "renew-password":
+        receiveRenewPassword(json.data);
         break;
 
       case "ko-login":
@@ -77,14 +81,12 @@ class Backend {
     }))
   }
 
-  renewPassword(login: string, password: string, token: string) {
-    console.log('renew : ', login);
+  renewPassword(token: string, password: string) {
     this.send(JSON.stringify({
       topic: "renew-password",
       data: {
-        login,
-        password,
-        token
+        token,
+        password
       }
     }))
   }
