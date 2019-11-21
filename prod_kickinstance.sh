@@ -26,4 +26,4 @@ docker exec -i postgres psql -U d4g -d d4g -c "COPY logement(foyer, type, surfac
 docker exec -i postgres psql -U d4g -d d4g -c "COPY proprietaire(foyer, nom, prenom, societe, adresse) FROM '/var/lib/postgresql/data/proprietaire.csv' DELIMITER ';' CSV HEADER"
 docker exec -i postgres psql -U d4g -d d4g -c "COPY locataire(foyer, nom, prenom) FROM '/var/lib/postgresql/data/locataire.csv' DELIMITER ';' CSV HEADER"
 docker exec -i postgres psql -U d4g -d d4g -c "COPY releve(foyer, date, valeur) FROM '/var/lib/postgresql/data/releve.csv' DELIMITER ';' CSV HEADER"
-docker exec -i postgres psql -U d4g -d d4g -c "COPY utilisateur(foyer, login, password) FROM '/var/lib/postgresql/data/utilisateur.csv' DELIMITER ';' CSV HEADER"
+docker exec -i postgres psql -U d4g -d d4g -c "COPY utilisateur(foyer, login, password, active, admin) FROM '/var/lib/postgresql/data/utilisateur.csv' DELIMITER ';' CSV HEADER"
