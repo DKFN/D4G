@@ -17,10 +17,10 @@
     <body>
     <!--- TODO: DELETE !--->
 
-    <form action="/file" method="POST" enctype="multipart/form-data">
+    <!--<form action="/file" method="POST" enctype="multipart/form-data">
         <input type="file" name="file" />
         <input type="submit" />
-    </form>
+    </form>-->
 
     <main class="backgrounded" id="page-login">
         <div class="row pad-lg-top">
@@ -123,7 +123,7 @@
             <div class="column column-30 mobile-column-100 table-releve">
                 <div>
                     <h4 class="float-left">Relevés du foyer</h4>
-                    <a href="#" class="button button-clear float-right">Ajouter un nouvel élément</a>
+                    <a action="open-modal" class="button button-clear float-right">Ajouter un nouvel élément</a>
                 </div>
                 <table id="table-releve-user">
                     <tr>
@@ -132,6 +132,32 @@
                         <th>Evolution</th>
                     </tr>
                 </table>
+            </div>
+        </div>
+        <div class="modal" action="cancel-modal">
+            <div class="body box">
+                <header>
+                    <h4>Ajout d'un nouveau relevé</h4>
+                    <hr>
+                    <form action="/file" method="POST" enctype="multipart/form-data">
+                        <fieldset>
+                            <label for="date-details">Date</label>
+                            <input type="text" placeholder="Date du relevé" id="date-details">
+                            <label for="amount">Montant</label>
+                            <input type="text" placeholder="Montant du relevé" id="amount">
+                            <br>
+                            <input type="file" name="Séléctionner un fichier" />
+                            <br>
+                            <div style="position: absolute;">
+                                <button class="button-primary">Envoyer</button>
+                                <a class="button button-clear" action="cancel-modal">Annuler</a>
+                            </div>
+                        </fieldset>
+                    </form>
+                </header>
+                <footer>
+
+                </footer>
             </div>
         </div>
     </main>
