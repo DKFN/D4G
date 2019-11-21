@@ -26,6 +26,10 @@ function onDashboard(data) {
 function onArrayUser(tableId, data) {
     const table: HTMLTableElement = <HTMLTableElement> $.id(tableId);
 
+    while (table.hasChildNodes()) {
+        table.removeChild(table.firstChild);
+    }
+
     const reversed = data.releves.reverse();
     reversed.forEach(function(item, index) {
         let row: HTMLTableRowElement = <HTMLTableRowElement> table.insertRow();
