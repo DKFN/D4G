@@ -20,7 +20,7 @@ function onDashboard(data) {
 
     onArrayUser('table-releve-user', data);
 
-    Polling.instance.send();
+    Polling.instance.send(data.foyer);
 }
 
 function onArrayUser(tableId, data) {
@@ -46,7 +46,13 @@ function onArrayUser(tableId, data) {
         let cellProgression: HTMLTableCellElement = <HTMLTableCellElement> row.insertCell();
         cellDate.innerHTML = item.date;
         cellValeur.innerHTML = item.valeur;
-        cellProgression.innerHTML = (index < reversed.length - 1 ? item.valeur - reversed[index + 1].valeur : "").toString();
+        const difference = index < reversed.length - 1 ? item.valeur - reversed[index + 1].valeur : 0;
+        cellProgression.innerHTML = (difference > 0 ? "&#8598; " : "&#8600; ") + difference.toString();
+        if (difference > 0) {
+            cellProgression.className = "red-text";
+        } else {
+            cellProgression.className = "green-text";
+        }
     });
 }
 

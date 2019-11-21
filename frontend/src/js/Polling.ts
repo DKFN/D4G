@@ -21,10 +21,10 @@ export default class Polling {
     Polling._instance = this;
   }
 
-  send() {
+  send(data="") {
     if (!this.intervalId) {
       this.intervalId = setInterval(() => {
-        Backend.pollData();
+        Backend.pollData(data);
       }, Polling.SEND_TIMEOUT);
     }
   }

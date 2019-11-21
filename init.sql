@@ -106,7 +106,7 @@ ALTER TABLE public.utilisateur OWNER TO d4g;
 
 CREATE TABLE public.fichier (
     foyer character varying(16) NOT NULL,
-    id integer NOT NULL,
+    id character varying(255) NOT NULL,
     file_path character varying (255) NOT NULL
 );
 
