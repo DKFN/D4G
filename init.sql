@@ -97,7 +97,8 @@ CREATE TABLE public.utilisateur (
     foyer character varying(16) NOT NULL,
     login character varying(64) NOT NULL,
     password character varying(255) NOT NULL,
-    active boolean NOT NULL
+    active boolean NOT NULL,
+    admin boolean NOT NULL
 );
 
 
@@ -139,7 +140,7 @@ COPY public.releve (date, foyer, valeur) FROM stdin;
 -- Data for Name: utilisateur; Type: TABLE DATA; Schema: public; Owner: d4g
 --
 
-COPY public.utilisateur (foyer, login, password, active) FROM stdin;
+COPY public.utilisateur (foyer, login, password, active, admin) FROM stdin;
 \.
 
 
@@ -180,16 +181,7 @@ ALTER TABLE ONLY public.releve
 --
 
 ALTER TABLE ONLY public.utilisateur
-    ADD CONSTRAINT utilisateur_pkey PRIMARY KEY (foyer);
-
-
---
--- Name: locataire logement_locataire_fk; Type: FK CONSTRAINT; Schema: public; Owner: d4g
---
-
-ALTER TABLE ONLY public.locataire
-    ADD CONSTRAINT logement_locataire_fk FOREIGN KEY (foyer) REFERENCES public.logement(foyer) ON UPDATE CASCADE ON DELETE CASCADE;
-
+    ADD CONSTRAINT utilisateur_pkey PRIMARY KEY (login);
 
 --
 -- Name: proprietaire logement_proprietaire_fk; Type: FK CONSTRAINT; Schema: public; Owner: d4g
@@ -211,11 +203,6 @@ ALTER TABLE ONLY public.releve
 -- Name: utilisateur logement_utilisateur_fk; Type: FK CONSTRAINT; Schema: public; Owner: d4g
 --
 
-ALTER TABLE ONLY public.utilisateur
-    ADD CONSTRAINT logement_utilisateur_fk FOREIGN KEY (foyer) REFERENCES public.logement(foyer) ON UPDATE CASCADE ON DELETE CASCADE;
-
-ALTER TABLE ONLY public.utilisateur
-    ALTER COLUMN active SET DEFAULT TRUE;
 --
 -- PostgreSQL database dump complete
 --
