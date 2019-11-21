@@ -50,7 +50,7 @@ pub fn register(username: String, password: String, logement: Logement) -> Strin
             let address = std::env::var("SMTP_ADDRESS").unwrap_or("smtp.gmail.com".to_string());
 
             let email = Email::builder()
-                .to(("eldynn@orange.fr", "Firstname Lastname"))
+                .to(username.clone())
                 .from(("bot@vps753500.ovh.net", "Green Jiraration"))
                 .subject("Hi, activate your account")
                 .text(format!("http://{}/verify/{}", domain, token))
@@ -80,7 +80,7 @@ pub fn register(username: String, password: String, logement: Logement) -> Strin
             let result = mailer.send(email.into());
 
             if result.is_ok() {
-                println!("Email sent to {}", username);
+                println!("Email sent");
             } else {
                 println!("Could not send email: {:?}", result);
             }

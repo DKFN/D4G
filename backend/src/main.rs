@@ -8,8 +8,9 @@ use actix_web_actors::ws;
 use actix;
 use actix::{StreamHandler, Actor};
 use serde_json::Value;
+use serde_json::json;
 use crate::controllers::{index, login, register, sources};
-use crate::model::{Logement, Proprietaire, Locataire};
+use crate::model::{Logement};
 
 mod controllers;
 mod model;
@@ -24,6 +25,13 @@ pub struct SocketMessage {
 pub struct LoginQuery {
     login: String,
     password: String
+}
+
+#[derive(Deserialize, Serialize)]
+pub struct RegisterQuery {
+    login: String,
+    password: String,
+    logement: Logement
 }
 
 // do websocket handshake and start actor
@@ -54,33 +62,13 @@ impl StreamHandler<ws::Message, ws::ProtocolError> for Ws {
                     "try-login" => {
                         let response: Value = login(serde_json::from_value(request.data).unwrap());
                         ctx.text(response.to_string());
-
-                        /*let ll = Logement {
-                            foyer: "".to_string(),
-                            l_type: 0,
-                            surface: 10.0,
-                            nb_pieces: 3,
-                            chauffage: "le chauffage".to_string(),
-                            date_construction: 1990,
-                            n_voie: "888".to_string(),
-                            voie1: "voie 1 super".to_string(),
-                            code_postal: "99850".to_string(),
-                            ville: "Poit".to_string(),
-                            proprietaire: Proprietaire {
-                                nom: Some("Super prop".to_string()),
-                                prenom: Some("kdek z".to_string()),
-                                societe: Some("lalalalla".to_string()),
-                                adresse: Some("dza daz5 d46az5 d4az5 d45z".to_string()),
-                            },
-                            locataire: Locataire {
-                                nom: "bibibi".to_string(),
-                                prenom: "rooroororo".to_string(),
-                            },
-                            releves: vec![]
-                        };
-
-                        register("eldynn@orange.fr".to_string(), "test".to_string(), ll);*/
                     },
+                    "register" => {
+                        let data: RegisterQuery = serde_json::from_value(request.data).unwrap();
+                        let response = register(data.login, data.password, data.logement);
+
+                        ctx.text(json!({ "topic": "register", "data": { "message": response }}).to_string());
+                    }
                     _ => {} // Needed so compiler don't end up in error
                 }
             },
