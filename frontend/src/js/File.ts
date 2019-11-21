@@ -28,7 +28,6 @@ class File {
         this.input = input;
         this.input.onchange = (e) => {
             this.file = e.target.files[0] || e.dataTransfer.files[0];
-            console.log(this.file);
         }
     }
 }
