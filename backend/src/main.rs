@@ -169,7 +169,7 @@ pub fn main() {
             .route("/socket", web::get().to(ws_index))
             .route("/file/{foyer}", web::post().to_async(upload))
             .service(
-                afs::Files::new("/dl", "/public/uploads")
+                afs::Files::new("/files", "/public/uploads")
                     .show_files_listing()
                     .use_last_modified(true))
     })
