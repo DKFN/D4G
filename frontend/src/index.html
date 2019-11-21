@@ -27,7 +27,7 @@
                         <input type="password" placeholder="Mot de passe" id="password">
                         <div class="message"></div>
                         <button class="button" id="btn-login">Connexion</button>
-                        <a class="button button-clear">Mot de passe oublié</a>
+                        <a class="button button-clear" to="page-forget">Mot de passe oublié</a>
                     </fieldset>
                 </form>
             </div>
@@ -41,12 +41,12 @@
                     <fieldset>
                         <label for="login">Identifiant de connexion</label>
                         <input type="text" placeholder="Identifiant de connexion" id="login">
-                        <!-- [IF] Verified token, display -->
-                        <label for="password">Nouveau mot de passe</label>
-                        <input type="password" placeholder="Nouveau mot de passe" id="password">
-                        <label for="confirm">Confirmation du mot de passe</label>
-                        <input type="password" placeholder="Confirmation du mot de passe" id="confirm">
-                        <!-- [ENDIF] -->
+                        <div if="nextForm">
+                            <label for="renew-password">Nouveau mot de passe</label>
+                            <input type="password" placeholder="Nouveau mot de passe" id="renew-password">
+                            <label for="confirm">Confirmation du mot de passe</label>
+                            <input type="password" placeholder="Confirmation du mot de passe" id="confirm">
+                        </div>
                         <button class="button" id="btn-forget">Envoyer</button>
                         <a href="#" class="button button-clear">Annuler</a>
                     </fieldset>
