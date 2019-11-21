@@ -1,6 +1,7 @@
 import { clean, bind } from "./dom";
 import { onDetails } from "./details";
 import { $ } from "./dollard";
+import Polling from "./Polling";
 
 function onDashboard(data, admin) {
     clean('page-dashboard-user');
@@ -17,6 +18,8 @@ function onDashboard(data, admin) {
     };
 
     onArray(data);
+
+    Polling.instance.send();
 }
 
 function onArray(data) {
