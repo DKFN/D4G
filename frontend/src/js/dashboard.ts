@@ -30,6 +30,14 @@ function onArrayUser(tableId, data) {
         table.removeChild(table.firstChild);
     }
 
+    let rowHead: HTMLTableRowElement = <HTMLTableRowElement> table.insertRow();
+    const head = [ "Date", "Relevé", "Evolution" ];
+    head.forEach(function (item) {
+       let cell: HTMLTableCellElement = <HTMLTableCellElement> document.createElement("th");
+       cell.innerHTML = item;
+       rowHead.appendChild(cell);
+    });
+
     const reversed = data.releves.reverse();
     reversed.forEach(function(item, index) {
         let row: HTMLTableRowElement = <HTMLTableRowElement> table.insertRow();
