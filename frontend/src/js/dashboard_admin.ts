@@ -65,9 +65,10 @@ function handle_register_onclick() {
     radio_entreprise.addEventListener("click", (() => {
         displayProprietaire("entreprise");
     }));
-    send_register.addEventListener("click", (() => {
+    send_register.addEventListener("click", function(e) {
+        e.preventDefault();
         get_data();
-    }))
+    });
 }
 
 export { onDashboardAdmin }

@@ -56,7 +56,7 @@ function get_data() {
     const proprietaire_adresse = $.id("proprietaire_adresse").value;
     const proprietaire_nom = $.id("proprietaire_nom").value;
     const proprietaire_prenom = $.id("proprietaire_prenom").value;
-    const proprietaire_societe = $.id("proprietaire_entreprise").value;
+    const proprietaire_societe = $.id("nom_entreprise").value;
     const releves = [];
     const surface = $.id("surface").value;
     const ville = $.id("ville").value;
