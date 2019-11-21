@@ -13,19 +13,19 @@ class Backend {
   }
 
   onopen(event: Event): void {
-    console.log(event);
+    console.info(event);
   }
 
   onclose(event: CloseEvent): void {
-    console.log(event);
+    console.info(event);
   }
 
   onerror(event: ErrorEvent): void {
-    console.log(event);
+    console.info(event);
   }
 
   onmessage(event: MessageEvent): void {
-    console.log(event);
+    console.info(event);
 
     const json = JSON.parse(event.data);
     switch (json.topic) {
