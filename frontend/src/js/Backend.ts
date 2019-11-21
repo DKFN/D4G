@@ -27,7 +27,7 @@ class Backend {
   }
 
   onmessage(event: MessageEvent): void {
-    console.info(event);
+    console.info(arguments);
 
     const json = JSON.parse(event.data);
     switch (json.topic) {
