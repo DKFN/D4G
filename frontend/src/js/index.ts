@@ -8,8 +8,13 @@ interface ResponseApi {
   name: string;
 }
 
-// This is the bootstrapping function of the frontend
 const bootFront = () => {
+// This is the bootstrapping function of the frontend
+  const url = new URL(window.location.href);
+  if (url.searchParams.has('token')) {
+    onForget();
+    return;
+  }
   clean('page-login');
   const login = $.id("btn-login");
   login.onclick = () => {

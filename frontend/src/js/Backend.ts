@@ -1,6 +1,8 @@
 import { onLogin } from "./login";
 import { onDashboard } from "./dashboard";
 import Polling from "./Polling";
+import {onResponseDetail} from "./details";
+import { receiveForgetPassword, receiveRenewPassword } from "./forget";
 
 class Backend {
   socket: WebSocket = null;
@@ -35,6 +37,14 @@ class Backend {
         Polling.instance.receive(json.data);
         break;
 
+      case "forget-password":
+        receiveForgetPassword(json.data);
+        break;
+
+      case "renew-password":
+        receiveRenewPassword(json.data);
+        break;
+
       case "ko-login":
         onLogin(json.data, false);
         break;
@@ -50,6 +60,10 @@ class Backend {
       case "ok-info":
         onDashboard(json.data);
         break;
+
+      case "ok-add-releve":
+        onResponseDetail(json.data);
+        break;
     }
   }
 
@@ -64,7 +78,6 @@ class Backend {
   }
 
   forgetPassword(login: string) {
-    console.log('forget : ', login);
     this.send(JSON.stringify({
       topic: "forget-password",
       data: {
@@ -73,14 +86,12 @@ class Backend {
     }))
   }
 
-  renewPassword(login: string, password: string, token: string) {
-    console.log('renew : ', login);
+  renewPassword(token: string, password: string) {
     this.send(JSON.stringify({
       topic: "renew-password",
       data: {
-        login,
-        password,
-        token
+        token,
+        password
       }
     }))
   }
@@ -112,6 +123,19 @@ class Backend {
         JSON.stringify({
           topic: "info-logement",
           data: { foyer }
+        })
+    )
+  }
+
+  addDetail(foyer, date, valeur) {
+    this.send(
+        JSON.stringify({
+          topic: "add-releve",
+          data: {
+            foyer,
+            date,
+            valeur
+          }
         })
     )
   }

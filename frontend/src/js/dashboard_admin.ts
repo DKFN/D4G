@@ -4,7 +4,6 @@ import "./Backend";
 import backend from "./Backend";
 import Polling from "./Polling";
 import { onRegister, displayProprietaire, get_data } from "./register";
-import get = Reflect.get;
 
 function onDashboardAdmin(data) {
     clean('page-dashboard-admin');

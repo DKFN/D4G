@@ -6,7 +6,7 @@ extern crate regex;
 
 
 use actix_files::NamedFile;
-use crate::{LoginQuery, ForgetPassword, InfoLogement};
+use crate::{LoginQuery, InfoLogement};
 use postgres::{Connection, TlsMode};
 use serde_json::Value;
 use serde_json::json;
@@ -57,8 +57,7 @@ pub fn connect_ddb() -> Connection{
     Connection::connect("postgresql://d4g:Design4Green@172.17.0.3:5432", TlsMode::None).unwrap()
 }
 
-pub fn send_email(subject: String, mail: String, message: String) {
-
+pub fn send_email(subject: String, mail: String, message: String) -> lettre::smtp::error::SmtpResult {
     let address = std::env::var("SMTP_ADDRESS").unwrap_or("smtp.gmail.com".to_string());
 
     let email = Email::builder()
@@ -91,18 +90,81 @@ pub fn send_email(subject: String, mail: String, message: String) {
 
     let result = mailer.send(email.into());
 
-    if result.is_ok() {
-        println!("Email sent");
-    } else {
+    mailer.close();
+
+    if !result.is_ok() {
         println!("Could not send email: {:?}", result);
     }
 
-    mailer.close();
+    result
+}
+
+fn is_email(login: String) -> bool {
+    let re = Regex::new(r"^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$").unwrap();
+    re.is_match(&login)
+}
+
+pub fn renew_password(token: String, password: String) -> (String, bool) {
+    let mut is_error = true;
+    let result;
+
+    let conn = connect_ddb();
+    let rows = conn.prepare("SELECT active FROM utilisateur where token=$1").unwrap()
+        .query(&[&token]).unwrap();
+
+    if rows.is_empty() {
+        result = "Impossible de trouver la demande de réinitialisation de mot de passe".to_string();
+    } else {
+        conn.prepare("UPDATE utilisateur SET password = $1, token = NULL where token=$2").unwrap()
+            .query(&[&password, &token]).unwrap();
+
+        is_error = false;
+        result = "Votre mot de passe a été changé, vous pouvez vous connecter à nouveau".to_string();
+    }
+
+    (result, is_error)
+}
+
+pub fn forget_password(login: String) -> (String, bool) {
+    let email = std::env::var("SMTP_USERNAME").unwrap_or("l'administrateur".to_string());
+    let mut is_error = true;
+    let mut result = format!("Nous n'avons pas réussi à vous contacter, envoyer un mail à {}", email);
+
+
+    if is_email(login.clone()) {
+        let conn = connect_ddb();
+        let rows = conn.prepare("SELECT active FROM utilisateur where login=$1").unwrap()
+            .query(&[&login]).unwrap();
+
+        if rows.is_empty() {
+            result = "Ce nom d'utilisateur est inconnu".to_string();
+        } else {
+            let activated: bool = rows.get(0).get(0);
+            if !activated {
+                result = format!("Votre compte n'est pas activé, vérifiez votre boîte mail ou contactez {}", email);
+            } else {
+                let domain = std::env::var("DOMAIN").unwrap_or("localhost".to_string());
+                let token = nanoid::simple();
+
+                conn.prepare("UPDATE utilisateur SET token = $1 where login=$2").unwrap()
+                    .query(&[&token, &login]).unwrap();
+
+                let mail = send_email("Changer votre mot de passe".to_string(), login.clone(), format!("http://{}?token={}", domain, token));
+
+                if mail.is_ok() {
+                    result = "Un mail pour réinitialisez votre mot de passe viens de vous être envoyé".to_string();
+                    is_error = false;
+                }
+            }
+        }
+    }
+
+    (result, is_error)
 }
 
 pub fn register(username: String, password: String, logement: Logement) -> String {
     let conn = connect_ddb();
-    let result;
+    let mut result;
 
     let rows = conn.prepare("SELECT active FROM utilisateur where login=$1").unwrap()
         .query(&[&username]).unwrap();
@@ -111,15 +173,9 @@ pub fn register(username: String, password: String, logement: Logement) -> Strin
         result = "User already exist".to_string();
     } else {
         let token = nanoid::simple();
-        let re = Regex::new(r"^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$").unwrap();
-        let username_is_email = re.is_match(&username);
-
-        if username_is_email {
-            let domain = std::env::var("DOMAIN").unwrap_or("localhost".to_string());
-            send_email("Hi, activate your account".to_string(), username.clone(), format!("http://{}/verify/{}", domain, token))
-        }
-
         let foyer = nanoid::generate(16); // We generate an id of 16 char because of database typing
+        let username_is_email = is_email(username.clone());
+
         conn.prepare("INSERT INTO logement VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)").unwrap()
             .query(&[&foyer, &logement.l_type, &logement.surface, &logement.nb_pieces, &logement.chauffage, &logement.date_construction, &logement.n_voie, &logement.voie1, &logement.code_postal, &logement.ville]).unwrap();
 
@@ -132,7 +188,16 @@ pub fn register(username: String, password: String, logement: Logement) -> Strin
         conn.prepare("INSERT INTO utilisateur VALUES ($1, $2, $3, $4, $5, $6)").unwrap()
             .query(&[&foyer, &username, &password, &!username_is_email, &token, &false]).unwrap();
 
-        result = "Check your mail to verify your account".to_string()
+        result = "Check your mail to verify your account".to_string();
+
+        if username_is_email {
+            let domain = std::env::var("DOMAIN").unwrap_or("localhost".to_string());
+            let mail = send_email("Hi, activate your account".to_string(), username.clone(), format!("http://{}/verify/{}", domain, token));
+
+            if !mail.is_ok() {
+                result = "Une erreur est survenue lors de l'envoi de l'email".to_string();
+            }
+        }
     }
 
     result
@@ -214,15 +279,11 @@ pub fn retrive_logement_admin() -> Vec<Resume>{
     }).collect()
 }
 
-pub fn info_logement(query: &InfoLogement) -> Logement {
-    let mut result: Logement = retrive_logement_from_foyer(&query.foyer);
-    result.releves = retrive_releves_from_foyer(&query.foyer);
+pub fn info_logement(query: &String) -> Logement {
+    let mut result: Logement = retrive_logement_from_foyer(&query);
+    result.releves = retrive_releves_from_foyer(&query);
     result
 }
-
-/*pub fn forget_password(_query: &ForgetPassword) -> Value {
-    Value
-}*/
 
 pub fn add_releve(query: &AddReleve) {
     let conn = connect_ddb();
@@ -232,12 +293,7 @@ pub fn add_releve(query: &AddReleve) {
 
 pub fn login(query: &LoginQuery) -> (Value, bool, bool) {
     // TODO: Add tuple as return to have all datas to give to ctx
-    let mut ret: Value = json!({
-            "topic": "ko-login",
-            "data": {
-                "message": "Unhandled server exception"
-            }
-        });
+    let ret: Value;
     let mut is_admin = false;
     let mut conn_ok = false;
     let conn = connect_ddb();
@@ -296,6 +352,10 @@ pub fn user_retrieve_datas_from_polling(ulogin: String) -> Value {
         .query(&[&ulogin]).unwrap();
 
     let user_foyer = rows.get(0).get(1);
+    foyer_retrieve_datas_from_polling(&user_foyer)
+}
+
+pub fn foyer_retrieve_datas_from_polling(user_foyer: &String) -> Value {
     let mut result: Logement = retrive_logement_from_foyer(&user_foyer);
     result.releves = retrive_releves_from_foyer(&user_foyer);
 
