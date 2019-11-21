@@ -1,6 +1,7 @@
 import Backend from "./Backend";
 import { clean } from "./dom";
 import { $ } from "./dollard";
+import {initLogin} from "./login";
 
 const context = 'page-forget';
 
@@ -27,6 +28,9 @@ function receiveRenewPassword(data) {
 function onForget() {
     clean(context);
     const page = $.id(context);
+    page.querySelector('[to]').onclick = e => {
+        initLogin();
+    };
     const submissionButton = page.getElementsByTagName('button')[0];
     const url = new URL(window.location.href);
     const containerMessage = page.getElementsByClassName('message')[0];

@@ -34,7 +34,7 @@ class Backend {
     const json = JSON.parse(event.data);
     switch (json.topic) {
       case "poll-data":
-        Polling.instance.receive(json.data);
+        Polling.receive(json.data);
         break;
 
       case "forget-password":
@@ -116,7 +116,7 @@ class Backend {
     };
 
     if (data) {
-      object.foyer = data;
+      object.data.foyer = data;
     }
 
     this.send(

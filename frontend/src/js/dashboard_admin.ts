@@ -8,7 +8,7 @@ import { onRegister, displayProprietaire, get_data } from "./register";
 function onDashboardAdmin(data) {
     clean('page-dashboard-admin');
     const dashboard = $.id('page-dashboard-admin');
-    localStorage.setItem('admin-data', data);
+    localStorage.setItem('admin-data', JSON.stringify(data));
 
     dashboard.querySelector('[action="open-modal"]').onclick = () => {
         onRegister(dashboard);
@@ -18,7 +18,7 @@ function onDashboardAdmin(data) {
 
     onArrayAdmin('table-releve-admin', data)
 
-    Polling.instance.send();
+    Polling.send();
 }
 
 function onArrayAdmin(tableId, data) {
@@ -45,7 +45,7 @@ function onArrayAdmin(tableId, data) {
             back_button.addEventListener("click", (() => {
                 const target: HTMLDivElement = <HTMLDivElement> $.id("user-dashboard-main");
                 target.removeChild(target.firstChild);
-                onDashboardAdmin(localStorage.getItem("admin-data"));
+                onDashboardAdmin(JSON.parse(localStorage.getItem("admin-data")));
             }));
 
             target.insertBefore(back_button, target.firstChild);

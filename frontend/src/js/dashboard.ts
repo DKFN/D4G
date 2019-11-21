@@ -29,7 +29,7 @@ function onDashboard(data) {
     onArrayUser('table-releve-user', data);
     onArrayFiles('access-files-dashboard', data.fichiers);
 
-    Polling.instance.send(data.foyer);
+    Polling.send(data.foyer);
 }
 
 function uploadFileToFoyer(context, foyer) {
