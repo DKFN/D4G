@@ -56,6 +56,25 @@ class Backend {
     }));
   }
 
+  forgetPassword(login: string, password: string) {
+    this.send(JSON.stringify({
+      topic: "forget-password",
+      data: {
+        login
+      }
+    }))
+  }
+
+  renewPassword(login: string, password: string) {
+    this.send(JSON.stringify({
+      topic: "renew-password",
+      data: {
+        login,
+        password
+      }
+    }))
+  }
+
   register(locataire, proprietaire, user) {
     this.send(
       JSON.stringify({

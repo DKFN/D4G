@@ -33,6 +33,27 @@
             </div>
         </div>
     </main>
+    <main class="backgrounded" id="page-forget">
+        <div class="row pad-lg-top">
+            <div class="column column-80 column-offset-10 bg-white min-h-lg box">
+                <h2>Oubli de mot de passe</h2>
+                <form>
+                    <fieldset>
+                        <label for="login">Identifiant de connexion</label>
+                        <input type="text" placeholder="Identifiant de connexion" id="login">
+                        <!-- [IF] Verified token, display -->
+                        <label for="password">Nouveau mot de passe</label>
+                        <input type="password" placeholder="Nouveau mot de passe" id="password">
+                        <label for="confirm">Confirmation du mot de passe</label>
+                        <input type="password" placeholder="Confirmation du mot de passe" id="confirm">
+                        <!-- [ENDIF] -->
+                        <button class="button" id="btn-forget">Envoyer</button>
+                        <a href="#" class="button button-clear">Annuler</a>
+                    </fieldset>
+                </form>
+            </div>
+        </div>
+    </main>
     <main id="page-dashboard-user">
         <div class="row">
             <aside class="column column-10 menu" style="background-color: #fff; height: 100vh;">
