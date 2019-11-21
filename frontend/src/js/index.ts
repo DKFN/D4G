@@ -2,6 +2,7 @@ import { $ } from "./dollard";
 import Backend from "./Backend";
 import {clean} from "./dom";
 import { onForget } from "./forget";
+import {initLogin} from "./login";
 
 // "Model" of response
 interface ResponseApi {
@@ -15,19 +16,7 @@ const bootFront = () => {
     onForget();
     return;
   }
-  clean('page-login');
-  const login = $.id("btn-login");
-  login.onclick = () => {
-    Backend.login(
-        $.id('login').value,
-        $.id('password').value
-    );
-    return false;
-  };
-  const routeForget = $.id('page-login').querySelector('[to="page-forget"]');
-  routeForget.onclick = () => {
-    onForget();
-  }
+  initLogin();
 };
 
 // It is important to use all functions inside it to avoid possible missing an HTMLElement because the script was invoked before the page is done painting
