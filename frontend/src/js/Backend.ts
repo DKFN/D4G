@@ -1,4 +1,6 @@
 import { onLogin } from "./login";
+import { onDashboard } from "./dashboard";
+import Polling from "./Polling";
 
 class Backend {
   socket: WebSocket = null;
@@ -29,8 +31,8 @@ class Backend {
 
     const json = JSON.parse(event.data);
     switch (json.topic) {
-      case "test":
-        console.warn("test", json.data);
+      case "poll-data":
+        Polling.instance.receive(json.data);
         break;
 
       case "ko-login":
@@ -84,6 +86,15 @@ class Backend {
           password,
           logement
         }
+      })
+    );
+  }
+
+  pollData() {
+    this.send(
+      JSON.stringify({
+        topic: "poll-data",
+        data: ""
       })
     );
   }
