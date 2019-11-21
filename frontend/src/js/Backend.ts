@@ -46,6 +46,10 @@ class Backend {
       case "ok-login-admin":
         onLogin(json.data, true, true);
         break;
+
+      case "ok-info":
+        onDashboard(json.data);
+        break;
     }
   }
 
@@ -101,6 +105,15 @@ class Backend {
         data: ""
       })
     );
+  }
+
+  infoLogement(foyer) {
+    this.send(
+        JSON.stringify({
+          topic: "info-logement",
+          data: foyer
+        })
+    )
   }
 
   send(message: string): void {
