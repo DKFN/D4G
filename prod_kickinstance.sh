@@ -13,7 +13,7 @@ docker stop backend || true
 docker stop postgres || true
 docker rm -f backend || true
 docker rm -f postgres || true
-docker run --name backend -d -p 80:8080 dkfn/d4g:dev
+docker run --name backend -d -p 80:8080 -e SMTP_USERNAME="green.jiraration@gmail.com" -e SMTP_PASSWORD="Bijour!1" dkfn/d4g:dev
 docker run --name postgres -e POSTGRES_USER="d4g" -e POSTGRES_PASSWORD="Design4Green" -p 5432:5432 -d postgres
 sleep 3
 docker cp ./test_data/logement.csv postgres:/var/lib/postgresql/data/logement.csv

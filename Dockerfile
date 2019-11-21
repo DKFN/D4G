@@ -36,8 +36,11 @@ RUN /EIP /fatfront /
 
 ## Final image
 FROM ubuntu
-RUN mkdir /public;\
-    mkdir /public/front
+RUN mkdir /public; \
+    mkdir /public/front; \
+    apt-get update && \
+    apt-get install -y --no-install-recommends apt-utils openssl ca-certificates
+
 COPY --from=eipOptimizer /index.html /public/front
 # COPY --from=frontend /frontend/dist/ /public/front
 COPY --from=backend /backend/target/release/backend /

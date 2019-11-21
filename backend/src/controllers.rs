@@ -1,9 +1,19 @@
+extern crate native_tls;
+extern crate nanoid;
+extern crate lettre;
+extern crate lettre_email;
+
 use actix_files::NamedFile;
 use crate::{LoginQuery};
 use postgres::{Connection, TlsMode};
 use serde_json::Value;
 use serde_json::json;
 use crate::model::{Logement, Proprietaire, Locataire};
+use lettre::{ ClientSecurity, ClientTlsParameters, SmtpClient, Transport };
+use lettre::smtp::authentication::{Credentials, Mechanism};
+use lettre::smtp::ConnectionReuseParameters;
+use native_tls::{Protocol, TlsConnector};
+use lettre_email::{Email};
 
 pub fn index() -> Result<NamedFile, actix_web::Error> {
     let path = "./public/front/index.html";
@@ -12,6 +22,50 @@ pub fn index() -> Result<NamedFile, actix_web::Error> {
 
 pub fn connect_ddb() -> Connection{
     Connection::connect("postgresql://d4g:Design4Green@172.17.0.3:5432", TlsMode::None).unwrap()
+}
+
+pub fn register() {
+    let token = nanoid::simple();
+    let domain = std::env::var("DOMAIN").unwrap_or("localhost".to_string());
+    let address = std::env::var("SMTP_ADDRESS").unwrap_or("smtp.gmail.com".to_string());
+
+    let email = Email::builder()
+        .to(("eldynn@orange.fr", "Firstname Lastname"))
+        .from(("bot@vps753500.ovh.net", "Green Jiraration"))
+        .subject("Hi, activate your account")
+        .text(format!("http://{}/verify/{}", domain, token))
+        .build()
+        .unwrap();
+
+    let mut tls_builder = TlsConnector::builder();
+    tls_builder.min_protocol_version(Some(Protocol::Tlsv10));
+
+    let tls_parameters = ClientTlsParameters::new(
+        address.to_string(),
+        tls_builder.build().unwrap()
+    );
+
+    let mut mailer = SmtpClient::new(
+        (address.as_str(), 465),
+        ClientSecurity::Wrapper(tls_parameters)
+    ).unwrap()
+        .authentication_mechanism(Mechanism::Login)
+        .credentials(Credentials::new(
+            std::env::var("SMTP_USERNAME").unwrap_or("user".to_string()),
+            std::env::var("SMTP_PASSWORD").unwrap_or("password".to_string())
+        ))
+        .connection_reuse(ConnectionReuseParameters::ReuseUnlimited)
+        .transport();
+
+    let result = mailer.send(email.into());
+
+    if result.is_ok() {
+        println!("Email sent");
+    } else {
+        println!("Could not send email: {:?}", result);
+    }
+
+    mailer.close();
 }
 
 pub fn login(query:LoginQuery) -> Value {
