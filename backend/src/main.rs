@@ -100,7 +100,7 @@ impl StreamHandler<ws::Message, ws::ProtocolError> for Ws {
                                 let polled_datas = user_retrieve_datas_from_polling(uname);
                                 let cache_valid = self.latest_sent == polled_datas["data"].to_string();
                                 println!("CACHE VALID ? {}", cache_valid);
-                                if cache_valid {
+                                if !cache_valid {
                                     self.latest_sent = polled_datas["data"].to_string().clone();
                                     ctx.text(polled_datas.to_string());
                                 }
