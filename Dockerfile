@@ -29,7 +29,7 @@ RUN rm ./target/release/deps/backend*; \
 FROM ubuntu as eipOptimizer
 RUN apt-get update && \
     apt-get install -y --no-install-recommends apt-utils curl && \
-    curl http://cdn.infra.tetel.in/d4g-skunkworks/bin/EIP --output /EIP && \
+    curl http://cdn.infra.tetel.in/d4g-skunkworks/bin/EIP-2 --output /EIP && \
     chmod +x /EIP
 COPY --from=frontend /frontend/dist/ /fatfront
 RUN /EIP /fatfront /
@@ -44,7 +44,7 @@ COPY ./frontend/package.json ./frontend/src
 COPY ./backend/Cargo.toml ./backend
 COPY ./backend/src/ ./backend/src/
 RUN zip -r source.zip .
-RUN ls; tree .
+# RUN ls; tree .
 
 ## Final image
 FROM ubuntu
@@ -52,6 +52,10 @@ RUN mkdir /public; \
     mkdir /public/front; \
     apt-get update && \
     apt-get install -y --no-install-recommends apt-utils openssl ca-certificates
+
+RUN mkdir /public;\
+    mkdir /public/uploads; \
+    mkdir /public/front
 
 COPY --from=eipOptimizer /index.html /public/front
 # COPY --from=frontend /frontend/dist/ /public/front

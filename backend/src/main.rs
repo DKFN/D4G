@@ -9,8 +9,10 @@ use actix;
 use actix::{StreamHandler, Actor};
 use serde_json::Value;
 use serde_json::json;
-use crate::controllers::{index, login, register, sources};
 use crate::model::{Logement};
+use crate::controllers::{index, login, register, sources, upload};
+use std::cell::Cell;
+use actix_files as afs;
 
 mod controllers;
 mod model;
@@ -78,6 +80,10 @@ impl StreamHandler<ws::Message, ws::ProtocolError> for Ws {
     }
 }
 
+pub struct AppState {
+    pub counter: Cell<usize>,
+}
+
 pub fn main() {
 
     let app_port = std::env::var("APP_PORT").unwrap_or("8080".to_string());
@@ -95,13 +101,20 @@ pub fn main() {
     println!("[D4G] UI Access http://localhost/");
     std::env::set_var("RUST_LOG", "actix_web=debug");
     env_logger::init();
+
     HttpServer::new(|| {
         App::new()
+            .data(Cell::new(0usize))
             .wrap(middleware::Compress::default())
             .wrap(Logger::default())
             .route("/", web::get().to(index))
             .route("/source.zip", web::get().to(sources))
             .route("/socket", web::get().to(ws_index))
+            .route("/file", web::post().to_async(upload))
+            .service(
+                afs::Files::new("/dl", "/public/uploads")
+                    .show_files_listing()
+                    .use_last_modified(true))
     })
         .bind(format!("0.0.0.0:{}", app_port))
         .unwrap()
