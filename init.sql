@@ -33,16 +33,16 @@ ALTER DATABASE d4g OWNER TO d4g;
 --
 
 CREATE TABLE public.logement (
-    foyer character varying(16) NOT NULL,
+    foyer character varying(255) NOT NULL,
     type integer NOT NULL,
     surface real NOT NULL,
     nb_pieces integer NOT NULL,
-    chauffage character varying(16) NOT NULL,
+    chauffage character varying(255) NOT NULL,
     date_construction integer NOT NULL,
-    n_voie character varying(8) NOT NULL,
-    voie1 character varying(254) NOT NULL,
+    n_voie character varying(255) NOT NULL,
+    voie1 character varying(255) NOT NULL,
     code_postal character varying(255) NOT NULL,
-    ville character varying(128) NOT NULL
+    ville character varying(255) NOT NULL
 );
 
 
@@ -53,11 +53,11 @@ ALTER TABLE public.logement OWNER TO d4g;
 --
 
 CREATE TABLE public.proprietaire (
-    foyer character varying(16) NOT NULL,
-    nom character varying(128),
-    prenom character varying(128),
-    societe character varying(128),
-    adresse character varying(254)
+    foyer character varying(255) NOT NULL,
+    nom character varying(255),
+    prenom character varying(255),
+    societe character varying(255),
+    adresse character varying(255)
 );
 
 
@@ -68,9 +68,9 @@ ALTER TABLE public.proprietaire OWNER TO d4g;
 --
 
 CREATE TABLE public.locataire (
-    foyer character varying(16) NOT NULL,
-    nom character varying(128) NOT NULL,
-    prenom character varying(128) NOT NULL
+    foyer character varying(255) NOT NULL,
+    nom character varying(255) NOT NULL,
+    prenom character varying(255) NOT NULL
 );
 
 
@@ -81,8 +81,8 @@ ALTER TABLE public.locataire OWNER TO d4g;
 --
 
 CREATE TABLE public.releve (
-    foyer character varying(16) NOT NULL,
-    date character varying(10) NOT NULL,
+    foyer character varying(255) NOT NULL,
+    date character varying(255) NOT NULL,
     valeur integer NOT NULL
 );
 
@@ -94,8 +94,8 @@ ALTER TABLE public.releve OWNER TO d4g;
 --
 
 CREATE TABLE public.utilisateur (
-    foyer character varying(16) NOT NULL,
-    login character varying(64) NOT NULL,
+    foyer character varying(255) NOT NULL,
+    login character varying(255) NOT NULL,
     password character varying(255) NOT NULL,
     active boolean NOT NULL,
     token character varying(21),

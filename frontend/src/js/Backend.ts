@@ -101,6 +101,16 @@ class Backend {
     }))
   }
 
+  deleteAll(foyer: string){
+    this.send(JSON.stringify({
+      topic: "delete-all",
+      data: {
+        foyer
+      }
+    }))
+  }
+
+
   register(login, password, logement) {
     this.send(
       JSON.stringify({

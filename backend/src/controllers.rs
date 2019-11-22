@@ -292,6 +292,17 @@ pub fn info_logement(query: &String) -> Logement {
     result
 }
 
+pub fn delete_all(foyer: &String, uname: &String){
+    let conn = connect_ddb();
+    conn.prepare("DELETE FROM logement where foyer = $1").unwrap().query(&[foyer]).unwrap();
+    conn.prepare("DELETE FROM utilisateur where login = $1").unwrap().query(&[uname]).unwrap();
+}
+
+pub fn delete_logement(foyer: &String){
+    let conn = connect_ddb();
+    conn.prepare("DELETE FROM logement where foyer = $1").unwrap().query(&[foyer]).unwrap();
+}
+
 pub fn add_releve(query: &AddReleve) {
     let conn = connect_ddb();
     conn.prepare("INSERT INTO releve (foyer, date, valeur) VALUES ($1, $2, $3);").unwrap()

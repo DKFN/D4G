@@ -10,9 +10,10 @@ use actix::{StreamHandler, Actor};
 use serde_json::Value;
 use serde_json::json;
 use crate::model::{Logement, AddReleve, Resume};
-use crate::controllers::{index, login, register, sources, upload, verify, info_logement, user_retrieve_datas_from_polling, forget_password, add_releve, retrive_logement_admin, renew_password};
+use crate::controllers::{index, login, register, sources, upload, verify, info_logement, user_retrieve_datas_from_polling, forget_password, add_releve, retrive_logement_admin, renew_password, delete_all, delete_logement};
 use std::cell::Cell;
 use actix_files as afs;
+use actix_web_actors::ws::{CloseReason, CloseCode};
 
 mod controllers;
 mod model;
@@ -37,6 +38,11 @@ pub struct ForgetPassword {
 #[derive(Deserialize, Serialize)]
 pub struct InfoLogement {
     foyer: Option<String>
+}
+
+#[derive(Deserialize, Serialize)]
+pub struct InfoDelete {
+    foyer: String
 }
 
 #[derive(Deserialize, Serialize)]
@@ -136,6 +142,18 @@ impl StreamHandler<ws::Message, ws::ProtocolError> for Ws {
                         let response: Logement = info_logement(&data.foyer.unwrap());
                         self.latest_sent = serde_json::to_string(&response).unwrap().clone();
                         ctx.text(json!({ "topic": "ok-info", "data": response}).to_string());
+                    },
+                    "delete-all" => {
+                        let data: InfoDelete = serde_json::from_value(request.data).unwrap();
+                        if self.is_admin {
+                            delete_logement(&data.foyer)
+                        } else {
+                            delete_all(&data.foyer, &self.uname);
+                        }
+                        ctx.close(Option::from(CloseReason {
+                            code: CloseCode::Normal,
+                            description: None
+                        }));
                     },
                     "add-releve" => {
                         let data : AddReleve = serde_json::from_value(request.data).unwrap();
