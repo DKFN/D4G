@@ -155,6 +155,12 @@ impl StreamHandler<ws::Message, ws::ProtocolError> for Ws {
                             description: None
                         }));
                     },
+                    "disconnect" => {
+                        ctx.close(Option::from(CloseReason {
+                            code: CloseCode::Normal,
+                            description: None
+                        }));
+                    },
                     "add-releve" => {
                         let data : AddReleve = serde_json::from_value(request.data).unwrap();
                         let (response, is_error) = add_releve(&data);

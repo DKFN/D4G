@@ -148,6 +148,15 @@ class Backend {
     )
   }
 
+  disconnect() {
+    this.send(
+        JSON.stringify( {
+          topic: "disconnect",
+          data: {}
+        })
+    )
+  }
+
   addDetail(foyer, date, valeur) {
     this.send(
         JSON.stringify({
