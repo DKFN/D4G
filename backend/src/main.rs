@@ -10,7 +10,7 @@ use actix::{StreamHandler, Actor};
 use serde_json::Value;
 use serde_json::json;
 use crate::model::{Logement, AddReleve, Resume};
-use crate::controllers::{index, login, register, sources, upload, verify, info_logement, user_retrieve_datas_from_polling, forget_password, add_releve, foyer_retrieve_datas_from_polling, retrive_logement_admin, renew_password};
+use crate::controllers::{index, login, register, sources, upload, verify, info_logement, user_retrieve_datas_from_polling, forget_password, add_releve, retrive_logement_admin, renew_password};
 use std::cell::Cell;
 use actix_files as afs;
 
