@@ -5,6 +5,7 @@ import Polling from "./Polling";
 import File from "./File";
 import {closeModal, closingModal} from "./modal";
 import { dopyo } from 'dopyo.js';
+import Backend from "./Backend";
 
 function onDashboard(data) {
     clean('page-dashboard-user');
@@ -65,10 +66,30 @@ function onDashboard(data) {
         uploadFileToFoyer($.id('user-dashboard-main'), data.foyer)
     };
 
+    dashboard.querySelector('[action="user-delete"]').onclick = () => {
+        deleteFoyerAndAccount($.id('user-delete'), data.foyer)
+    };
+
     onArrayUser('table-releve-user', data);
     onArrayFiles('access-files-dashboard', data.fichiers);
 
     Polling.send(data.foyer);
+}
+
+function deleteFoyerAndAccount(modal, foyer) {
+    // Open modal
+    modal.classList.toggle('active');
+
+    const checkBox = document.getElementById("foyer-check");
+    const button = document.getElementById('rgpd-button');
+    checkBox.onchange= () => {
+        button.disabled = checkBox.checked != true;
+    };
+
+    modal.getElementsByTagName('button')[0].onclick = () => {
+        Backend.deleteAll(foyer);
+    };
+    closingModal(modal);
 }
 
 function uploadFileToFoyer(context, foyer) {
