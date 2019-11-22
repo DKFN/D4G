@@ -303,10 +303,25 @@ pub fn delete_logement(foyer: &String){
     conn.prepare("DELETE FROM logement where foyer = $1").unwrap().query(&[foyer]).unwrap();
 }
 
-pub fn add_releve(query: &AddReleve) {
+pub fn add_releve(query: &AddReleve) -> (String, bool) {
     let conn = connect_ddb();
-    conn.prepare("INSERT INTO releve (foyer, date, valeur) VALUES ($1, $2, $3);").unwrap()
-        .query(&[&query.foyer, &query.date, &query.valeur]).unwrap();
+    let mut is_error = false;
+    let result;
+
+    let rows = conn.prepare("SELECT valeur FROM releve where foyer=$1 AND date=$2").unwrap()
+        .query(&[&query.foyer, &query.date]).unwrap();
+
+    if !rows.is_empty() {
+        result = "Un relevé existe déjà pour cette date".to_string();
+        is_error = true;
+    } else {
+        conn.prepare("INSERT INTO releve (foyer, date, valeur) VALUES ($1, $2, $3);").unwrap()
+            .query(&[&query.foyer, &query.date, &query.valeur]).unwrap();
+
+        result = "Le relevé a bien été ajouté".to_string();
+    }
+
+    (result, is_error)
 }
 
 pub fn login(query: &LoginQuery) -> (Value, bool, bool) {
