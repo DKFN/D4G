@@ -59,6 +59,8 @@ function onDashboard(data) {
                 }
             }
         });
+    } else {
+        $.id("userchart").innerHTML = 'Pas assez de données. Le graphique nécessite au moins deux relevés.';
     }
     // Open modal for add detail (releve) to a foyer
     dashboard.querySelector('[action="open-modal"]').onclick = () => {
