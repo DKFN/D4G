@@ -177,7 +177,7 @@ pub fn register(username: String, password: String, logement: Logement) -> Strin
         .query(&[&username]).unwrap();
 
     if !rows.is_empty() {
-        result = "User already exist".to_string();
+        result = "L'utilisateur existe déjà".to_string();
     } else {
         let token = nanoid::simple();
         let foyer = nanoid::generate(16); // We generate an id of 16 char because of database typing
@@ -195,11 +195,11 @@ pub fn register(username: String, password: String, logement: Logement) -> Strin
         conn.prepare("INSERT INTO utilisateur VALUES ($1, $2, $3, $4, $5, $6)").unwrap()
             .query(&[&foyer, &username, &hash(password), &!username_is_email, &token, &false]).unwrap();
 
-        result = "Check your mail to verify your account".to_string();
+        result = "Un email vous a été envoyé pour vérifier votre compte".to_string();
 
         if username_is_email {
             let domain = std::env::var("DOMAIN").unwrap_or("localhost".to_string());
-            let mail = send_email("Hi, activate your account".to_string(), username.clone(), format!("http://{}/verify/{}", domain, token));
+            let mail = send_email("Activez votre compte !".to_string(), username.clone(), format!("http://{}/verify/{}", domain, token));
 
             if !mail.is_ok() {
                 result = "Une erreur est survenue lors de l'envoi de l'email".to_string();
