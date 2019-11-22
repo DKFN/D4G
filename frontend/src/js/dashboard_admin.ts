@@ -26,13 +26,11 @@ function onArrayAdmin(tableId, data) {
 
     data.forEach(function (item) {
         let row: HTMLTableRowElement = <HTMLTableRowElement> table.insertRow();
-        let cellFoyer: HTMLTableCellElement = <HTMLTableCellElement> row.insertCell();
         let cellType: HTMLTableCellElement = <HTMLTableCellElement> row.insertCell();
         let cellVille: HTMLTableCellElement = <HTMLTableCellElement> row.insertCell();
         let cellLocataire: HTMLTableCellElement = <HTMLTableCellElement> row.insertCell();
         let cellProprietaire: HTMLTableCellElement = <HTMLTableCellElement> row.insertCell();
 
-        cellFoyer.innerHTML = item.foyer;
         cellType.innerHTML = item.l_type === 1 ? "Appartement" : "Maison";
         cellVille.innerHTML = item.ville;
         cellLocataire.innerHTML = item.locataire;

@@ -84,9 +84,9 @@ function onArrayUser(tableId, data) {
         const difference = index < reversed.length - 1 ? item.valeur - reversed[index + 1].valeur : 0;
         cellProgression.innerHTML = (difference > 0 ? "&#8598; " : "&#8600; ") + difference.toString();
         if (difference > 0) {
-            cellProgression.className = "red-text";
+            cellProgression.className = "warning";
         } else {
-            cellProgression.className = "green-text";
+            cellProgression.className = "success";
         }
     });
 }
