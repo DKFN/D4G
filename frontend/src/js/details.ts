@@ -27,7 +27,7 @@ function onResponseDetail(data) {
     const message = modal.querySelector('.message');
 
     message.classList.add(data.error ? 'warning' : 'success');
-    message.innerHTML = `<strong>${data.error ? 'warning' : 'success'}</strong><br>${data.error || data.message}`;
+    message.innerHTML = `<strong>${data.error ? 'Erreur' : 'Succès'}</strong><br>${data.error || data.message}`;
 
     if (!data.error) {
         setTimeout(closeDetailModal, 1000, modal, message);
