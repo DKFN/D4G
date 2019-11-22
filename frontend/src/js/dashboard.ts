@@ -152,8 +152,10 @@ function onArrayUser(tableId, data) {
         let cellProgression: HTMLTableCellElement = <HTMLTableCellElement> row.insertCell();
         cellDate.innerHTML = item.date;
         cellValeur.innerHTML = item.valeur;
-        const difference = index < reversed.length - 1 ? item.valeur - reversed[index + 1].valeur : 0;
-        cellProgression.innerHTML = (difference > 0 ? "&#8598; " : "&#8600; ") + difference.toString();
+        const data_before = reversed[index + 1].valeur;
+        const difference = index < reversed.length - 1 ? item.valeur - data_before : 1;
+        const percentage = Math.abs(Math.round((difference * 100) / data_before));
+        cellProgression.innerHTML = (difference > 0 ? "&#8598; " : "&#8600; ") + percentage.toString() + "%";
         if (difference > 0) {
             cellProgression.className = "warning";
         } else {
