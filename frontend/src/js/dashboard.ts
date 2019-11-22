@@ -23,10 +23,10 @@ function onDashboard(data) {
 
     $.id("userchart").innerHTML = '';
 
-    const axis = data.releves.map((rv) => '');
-    const values = data.releves.map((rv) => rv.valeur);
+    if (data.releves.length > 1) {
+        const axis = data.releves.map(rv => '');
+        const values = data.releves.map(rv => rv.valeur);
 
-    if (axis.length != 0) {
         dopyo.createChart({
             type: 'area',
             size: {
