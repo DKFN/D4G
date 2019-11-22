@@ -4,6 +4,7 @@ import { $ } from "./dollard";
 import Polling from "./Polling";
 import File from "./File";
 import {closeModal, closingModal} from "./modal";
+import { dopyo } from 'dopyo.js';
 
 function onDashboard(data) {
     clean('page-dashboard-user');
@@ -16,6 +17,44 @@ function onDashboard(data) {
         'ville': data.ville || 'Non renseignée'
     });
 
+    console.log("RETRIEVED DASHBOARD", dopyo);
+    console.log("RETRIEVED DASHBOARD", data);
+
+    $.id("userchart").innerHTML = '';
+
+    const axis = data.releves.map((rv) => '');
+    const values = data.releves.map((rv) => rv.valeur);
+
+    dopyo.createChart({
+        type: 'area',
+        size: {
+            width: 600,
+            height: 400,
+        },
+        containerEl: '#userchart',
+        data: {
+            xAxis: axis,
+            series: [
+                {
+                    name: 'Releves de consommation',
+                    data: values
+                }
+            ]
+        },
+        options: {
+            xAxis: {
+                show: false,
+                title: ""
+            },
+            yAxis: {
+                show: true,
+                title: ''
+            },
+            tooltip: {
+                show: false,
+            }
+        }
+    });
     // Open modal for add detail (releve) to a foyer
     dashboard.querySelector('[action="open-modal"]').onclick = () => {
         onDetails(dashboard, data.foyer)
