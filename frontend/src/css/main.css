@@ -76,6 +76,7 @@ main.visible {
     height: 100vh;
     display: flex;
     flex-direction: column;
+    position: fixed;
 }
 .row .column.menu div.menu-list {
     display: flex;
