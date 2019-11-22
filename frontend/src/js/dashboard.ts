@@ -59,6 +59,8 @@ function onDashboard(data) {
                 }
             }
         });
+    } else {
+        $.id("userchart").innerHTML = 'Pas assez de données. Le graphique nécessite au moins deux relevés.';
     }
     // Open modal for add detail (releve) to a foyer
     dashboard.querySelector('[action="open-modal"]').onclick = () => {
@@ -80,6 +82,7 @@ function onDashboard(data) {
     };
 
     onArrayUser('table-releve-user', data);
+    console.log('hereeeee');
     onArrayFiles('access-files-dashboard', data.fichiers);
 
     Polling.send(data.foyer);
@@ -119,6 +122,7 @@ function uploadFileToFoyer(context, foyer) {
 
 function onArrayFiles(id, files) {
     const contextTable = $.id(id);
+    console.log(contextTable);
     const tbody = contextTable.getElementsByTagName('tbody')[0];
 
     tbody.innerHTML = '';

@@ -40,7 +40,7 @@ WORKDIR /tozip
 RUN apt update && apt install -y zip tree
 RUN mkdir frontend; mkdir frontend/src; mkdir backend; mkdir backend/src;
 COPY ./frontend/src/ ./frontend/src/
-COPY ./frontend/package.json ./frontend/src
+COPY ./frontend/package.json ./frontend
 COPY ./backend/Cargo.toml ./backend
 COPY ./backend/src/ ./backend/src/
 RUN zip -r source.zip .
