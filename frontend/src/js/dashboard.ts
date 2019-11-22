@@ -26,36 +26,38 @@ function onDashboard(data) {
     const axis = data.releves.map((rv) => '');
     const values = data.releves.map((rv) => rv.valeur);
 
-    dopyo.createChart({
-        type: 'area',
-        size: {
-            width: 600,
-            height: 400,
-        },
-        containerEl: '#userchart',
-        data: {
-            xAxis: axis,
-            series: [
-                {
-                    name: 'Releves de consommation',
-                    data: values
+    if (axis.length != 0) {
+        dopyo.createChart({
+            type: 'area',
+            size: {
+                width: 600,
+                height: 400,
+            },
+            containerEl: '#userchart',
+            data: {
+                xAxis: axis,
+                series: [
+                    {
+                        name: 'Releves de consommation',
+                        data: values
+                    }
+                ]
+            },
+            options: {
+                xAxis: {
+                    show: false,
+                    title: ""
+                },
+                yAxis: {
+                    show: true,
+                    title: ''
+                },
+                tooltip: {
+                    show: false,
                 }
-            ]
-        },
-        options: {
-            xAxis: {
-                show: false,
-                title: ""
-            },
-            yAxis: {
-                show: true,
-                title: ''
-            },
-            tooltip: {
-                show: false,
             }
-        }
-    });
+        });
+    }
     // Open modal for add detail (releve) to a foyer
     dashboard.querySelector('[action="open-modal"]').onclick = () => {
         onDetails(dashboard, data.foyer)
