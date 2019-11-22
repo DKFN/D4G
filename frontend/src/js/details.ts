@@ -35,6 +35,8 @@ function onResponseDetail(data) {
 }
 
 function closeDetailModal(modal, message) {
+    modal.querySelector('[data-id="date"]').value = "";
+    modal.querySelector('[data-id="amount"]').value = "";
     message.classList.remove('success');
     message.innerHTML = '';
     closeModal(modal);
