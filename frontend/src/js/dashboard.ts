@@ -75,6 +75,7 @@ function onDashboard(data) {
     };
 
     onArrayUser('table-releve-user', data);
+    console.log('hereeeee');
     onArrayFiles('access-files-dashboard', data.fichiers);
 
     Polling.send(data.foyer);
@@ -114,6 +115,7 @@ function uploadFileToFoyer(context, foyer) {
 
 function onArrayFiles(id, files) {
     const contextTable = $.id(id);
+    console.log(contextTable);
     const tbody = contextTable.getElementsByTagName('tbody')[0];
 
     tbody.innerHTML = '';
