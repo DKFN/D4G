@@ -49,13 +49,18 @@ function uploadFileToFoyer(context, foyer) {
 
 function onArrayFiles(id, files) {
     const contextTable = $.id(id);
-    contextTable.getElementsByTagName('tbody')[0].innerHTML = '';
+    const tbody = contextTable.getElementsByTagName('tbody')[0];
+
+    tbody.innerHTML = '';
 
     new Set(files).forEach(el => {
-        contextTable.innerHTML += `<tr><td>${el.replace('/files/','')}</td></tr>`;
-        contextTable.onclick = () => {
+        const node = document.createElement('tr');
+        node.innerHTML = `<td>${el.replace('/files/','')}</td>`;
+        node.onclick = () => {
             window.open(window.location.href.replace(/\/$/, '') + el, '_blank');
         }
+
+        tbody.appendChild(node);
     });
 }
 
