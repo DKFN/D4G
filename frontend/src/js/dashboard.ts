@@ -74,6 +74,11 @@ function onDashboard(data) {
         deleteFoyerAndAccount($.id('user-delete'), data.foyer)
     };
 
+    dashboard.querySelector('[action="disconnect"]').onclick = () => {
+        Backend.disconnect();
+        window.location.reload();
+    };
+
     onArrayUser('table-releve-user', data);
     onArrayFiles('access-files-dashboard', data.fichiers);
 
