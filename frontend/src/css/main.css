@@ -109,30 +109,30 @@ main.visible {
 }
 
 .row .column.table-releve, .row .column .box.table-releve {
-    max-height: calc(100vh - 4rem);
-    overflow-y: scroll;
-    -ms-overflow-y: scroll;
     padding: 2rem;
 }
 
 .row .column .box.table-releve {
+    overflow-y: scroll;
+    -ms-overflow-y: scroll;
     max-height: calc(80vh);
 }
-
-.table-releve::-webkit-scrollbar-track
+.blocks-table::-webkit-scrollbar-track,
+.box.table-releve::-webkit-scrollbar-track
 {
     box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
     border-radius: 10px;
     background-color: #F5F5F5;
 }
-
-.table-releve::-webkit-scrollbar
+.blocks-table::-webkit-scrollbar,
+.box.table-releve::-webkit-scrollbar
 {
     width: 12px;
     background-color: #F5F5F5;
 }
 
-.table-releve::-webkit-scrollbar-thumb
+.blocks-table::-webkit-scrollbar-thumb,
+.box.table-releve::-webkit-scrollbar-thumb
 {
     border-radius: 10px;
     box-shadow: inset 0 0 6px rgba(0,0,0,.3);
@@ -166,6 +166,14 @@ main.visible {
     -ms-overflow-y: scroll;
 }
 
+.blocks-table {
+    max-height: 40vh;
+    height: 40vh;
+    overflow-y: scroll;
+    border-spacing: 0;
+    width: 100%;
+}
+
 .modal .body fieldset div {
     bottom: 2rem;
 }
@@ -177,4 +185,8 @@ main.visible {
 
 #access-files-dashboard tbody tr:hover, .box.table-releve tr:not(:first-child):hover {
     color: #19396e;
+}
+
+#user-dashboard-main {
+    min-height: 100vh;
 }

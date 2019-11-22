@@ -70,6 +70,7 @@
                     <a action="user-delete" class="button button-clear">Supression<br/>des données</a>
                 </div>
                 <div class="menu-list aside-end">
+                    <a action="disconnect" class="button button-clear">Déconnexion</a>
                     <a href="#" class="button button-clear">GREEN Jiraration</a>
                 </div>
                 <div id="user-delete" class="modal" action="cancel-modal">
@@ -90,9 +91,6 @@
                 </div>
             </aside>
             <div id="user-dashboard-main" class="column column-60 column-offset-10 mobile-column-100" style="background-color: #f5f5f5; padding-top: 6rem;">
-                <div class="clearfix">
-                    <a action="open-modal-file" class="button button-clear float-right">Ajouter un nouveau document</a>
-                </div>
                 <h3>Foyer</h3>
                 <div class="row">
                     <div class="column">
@@ -130,19 +128,6 @@
                         <div id="userchart" class="box column-offset-10"></div>
                     </div>
                 </div>
-                <div class="row">
-                    <div class="column">
-                        <h4>Accès à vos fichiers</h4>
-                        <table id="access-files-dashboard">
-                            <thead>
-                                <tr>
-                                    <th>Fichiers</th>
-                                </tr>
-                            </thead>
-                            <tbody></tbody>
-                        </table>
-                    </div>
-                </div>
                 <div class="modal" action="cancel-modal">
                     <div class="body box">
                         <header>
@@ -167,13 +152,30 @@
                     <h4 class="float-left">Relevés du foyer</h4>
                     <a action="open-modal" class="button button-clear float-right">Ajouter un nouvel élément</a>
                 </div>
-                <table id="table-releve-user">
-                    <tr>
-                        <th>Date</th>
-                        <th>Relevé</th>
-                        <th>Evolution</th>
-                    </tr>
-                </table>
+                <div class="blocks-table">
+                    <table id="table-releve-user">
+                        <tr>
+                            <th>Date</th>
+                            <th>Relevé</th>
+                            <th>Evolution</th>
+                        </tr>
+                    </table>
+                </div>
+                <br><br>
+                <div>
+                    <h4 class="float-left">Accès à vos fichiers</h4>
+                    <a action="open-modal-file" class="button button-clear float-right">Ajouter un nouveau document</a>
+                </div>
+                <div class="blocks-table">
+                    <table id="access-files-dashboard">
+                        <thead>
+                        <tr>
+                            <th>Fichiers</th>
+                        </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
             </div>
         </div>
         <div class="modal" action="cancel-modal">
