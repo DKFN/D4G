@@ -3,9 +3,11 @@
     <head>
         <meta charset="UTF-8">
         <!-- EIP tags are illegal but stripped from production to give better inline perf !-->
-        <EIP-CSS><link rel="stylesheet" href="./css/normalize.css">
-        <link rel="stylesheet" href="./css/milligram.css">
-        <link rel="stylesheet" href="./css/main.css"></EIP-CSS>
+        <EIP-CSS>
+            <link rel="stylesheet" href="./css/normalize.css">
+            <link rel="stylesheet" href="./css/milligram.css">
+            <link rel="stylesheet" href="./css/main.css">
+        </EIP-CSS>
         <meta name="viewport"
               content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
         <meta http-equiv="X-UA-Compatible" content="ie=edge">
@@ -108,7 +110,9 @@
                 </div>
                 <br><br>
                 <div class="row">
-                    <div class="column"></div>
+                    <div class="column" style="min-width: 600px;">
+                        <div id="userchart" class="box column-offset-10"></div>
+                    </div>
                     <div class="column">
                         <h4>Accès à vos fichiers</h4>
                         <table id="access-files-dashboard">
