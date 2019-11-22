@@ -157,8 +157,13 @@ impl StreamHandler<ws::Message, ws::ProtocolError> for Ws {
                     },
                     "add-releve" => {
                         let data : AddReleve = serde_json::from_value(request.data).unwrap();
-                        add_releve(&data);
-                        ctx.text(json!({ "topic": "ok-add-releve", "data": { "message": "Releve ajouté avec succès"}}).to_string());
+                        let (response, is_error) = add_releve(&data);
+
+                        if is_error {
+                            ctx.text(json!({ "topic": "ok-add-releve", "data": { "error": response }}).to_string());
+                        } else {
+                            ctx.text(json!({ "topic": "ok-add-releve", "data": { "message": response }}).to_string());
+                        }
                     },
                     "poll-data" => {
                         if self.auth {

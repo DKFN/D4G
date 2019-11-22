@@ -4,10 +4,12 @@ import "./Backend";
 import backend from "./Backend";
 import Polling from "./Polling";
 import { onRegister, displayProprietaire, get_data } from "./register";
+import {loadLogo} from "./logo";
 
 function onDashboardAdmin(data) {
     clean('page-dashboard-admin');
     const dashboard = $.id('page-dashboard-admin');
+    loadLogo(dashboard);
     localStorage.setItem('admin-data', JSON.stringify(data));
 
     dashboard.querySelector('[action="open-modal"]').onclick = () => {
