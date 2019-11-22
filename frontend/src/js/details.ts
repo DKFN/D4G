@@ -10,10 +10,13 @@ function onDetails(context, foyer) {
     modal.classList.toggle('active');
     modal.getElementsByTagName('button')[0].onclick = () => {
         const validated = checkForm(context);
+
         if (!validated.status) {
             return;
         }
+
         Backend.addDetail(foyer, validated.date, validated.amount);
+
         return false;
     };
     closingModal(modal);
@@ -22,9 +25,13 @@ function onDetails(context, foyer) {
 function onResponseDetail(data) {
     const modal = $.id('page-dashboard-user').getElementsByClassName('modal')[2];
     const message = modal.querySelector('.message');
-    message.classList.add('success');
-    message.innerHTML = '<strong>Félicitation</strong><br>Votre relevé a bien été rajouté !';
-    setTimeout(closeDetailModal, 1000, modal, message);
+
+    message.classList.add(data.error ? 'warning' : 'success');
+    message.innerHTML = `<strong>${data.error ? 'warning' : 'success'}</strong><br>${data.error || data.message}`;
+
+    if (!data.error) {
+        setTimeout(closeDetailModal, 1000, modal, message);
+    }
 }
 
 function closeDetailModal(modal, message) {
