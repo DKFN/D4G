@@ -169,11 +169,11 @@ main.visible {
     bottom: 2rem;
 }
 
-#access-files-dashboard tbody tr, .table-releve tr:not(:first-child) {
+#access-files-dashboard tbody tr, .box.table-releve tr:not(:first-child) {
     color: #3273dc;
     cursor: pointer;
 }
 
-#access-files-dashboard tbody tr:hover, .table-releve tr:not(:first-child):hover {
+#access-files-dashboard tbody tr:hover, .box.table-releve tr:not(:first-child):hover {
     color: #19396e;
 }
