@@ -2,6 +2,9 @@
     main {
         background-color: #f5f5f5;
     }
+    aside {
+        display: none !important;
+    }
     .row {
         flex-direction: column;
     }
