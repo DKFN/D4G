@@ -152,7 +152,7 @@ function onArrayUser(tableId, data) {
         let cellProgression: HTMLTableCellElement = <HTMLTableCellElement> row.insertCell();
         cellDate.innerHTML = item.date;
         cellValeur.innerHTML = item.valeur;
-        const data_before = reversed[index + 1].valeur || 0;
+        const data_before = index < reversed.length - 1 ? reversed[index + 1].valeur : 0;
         const difference = index < reversed.length - 1 ? item.valeur - data_before : 1;
         const percentage = Math.abs(Math.round((difference * 100) / data_before));
         cellProgression.innerHTML = (difference > 0 ? "&#8598; " : "&#8600; ") + percentage.toString() + "%";
