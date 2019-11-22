@@ -4,7 +4,7 @@ import { onDashboardAdmin } from './dashboard_admin';
 import { $ } from './dollard';
 
 class Polling {
-  static SEND_TIMEOUT: number = 5000;
+  static SEND_TIMEOUT: number = 3000;
 
   intervalId: NodeJS.Timeout = null;
 
