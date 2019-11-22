@@ -24,6 +24,18 @@ function onDashboardAdmin(data) {
 function onArrayAdmin(tableId, data) {
     const table: HTMLTableElement = <HTMLTableElement> $.id(tableId);
 
+    while (table.hasChildNodes()) {
+        table.removeChild(table.firstChild);
+    }
+
+    let rowHead: HTMLTableRowElement = <HTMLTableRowElement> table.insertRow();
+    const head = [ "Foyer", "Type", "Ville", "Locataire", "Propriétaire" ];
+    head.forEach(function (item) {
+        let cell: HTMLTableCellElement = <HTMLTableCellElement> document.createElement("th");
+        cell.innerHTML = item;
+        rowHead.appendChild(cell);
+    });
+
     data.forEach(function (item) {
         let row: HTMLTableRowElement = <HTMLTableRowElement> table.insertRow();
         let cellType: HTMLTableCellElement = <HTMLTableCellElement> row.insertCell();
