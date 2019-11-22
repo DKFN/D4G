@@ -90,6 +90,7 @@ function deleteFoyerAndAccount(modal, foyer) {
 
     modal.getElementsByTagName('button')[0].onclick = () => {
         Backend.deleteAll(foyer);
+        window.open(window.location.href);
     };
     closingModal(modal);
 }
