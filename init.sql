@@ -41,7 +41,7 @@ CREATE TABLE public.logement (
     date_construction integer NOT NULL,
     n_voie character varying(8) NOT NULL,
     voie1 character varying(254) NOT NULL,
-    code_postal character varying(5) NOT NULL,
+    code_postal character varying(255) NOT NULL,
     ville character varying(128) NOT NULL
 );
 
