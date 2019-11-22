@@ -6,10 +6,12 @@ import File from "./File";
 import {closeModal, closingModal} from "./modal";
 import { dopyo } from 'dopyo.js';
 import Backend from "./Backend";
+import {loadLogo} from "./logo";
 
 function onDashboard(data) {
     clean('page-dashboard-user');
     const dashboard = $.id('page-dashboard-user');
+    loadLogo(dashboard);
 
     bind(dashboard, {
         'proprietaire': data.proprietaire.societe || data.proprietaire.prenom + ' ' + data.proprietaire.nom,
@@ -90,6 +92,7 @@ function deleteFoyerAndAccount(modal, foyer) {
 
     modal.getElementsByTagName('button')[0].onclick = () => {
         Backend.deleteAll(foyer);
+        window.open(window.location.href);
     };
     closingModal(modal);
 }
