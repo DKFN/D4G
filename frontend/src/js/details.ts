@@ -6,7 +6,7 @@ const context = 'page-details';
 
 function onDetails(context, foyer) {
     // Open modal
-    const modal = context.getElementsByClassName('modal')[1];
+    const modal = context.getElementsByClassName('modal')[2];
     modal.classList.toggle('active');
     modal.getElementsByTagName('button')[0].onclick = () => {
         const validated = checkForm(context);
@@ -20,7 +20,7 @@ function onDetails(context, foyer) {
 }
 
 function onResponseDetail(data) {
-    const modal = $.id('page-dashboard-user').getElementsByClassName('modal')[1];
+    const modal = $.id('page-dashboard-user').getElementsByClassName('modal')[2];
     const message = modal.querySelector('.message');
     message.classList.add('success');
     message.innerHTML = '<strong>Félicitation</strong><br>Votre relevé a bien été rajouté !';

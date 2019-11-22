@@ -29,7 +29,7 @@ function onArrayAdmin(tableId, data) {
     }
 
     let rowHead: HTMLTableRowElement = <HTMLTableRowElement> table.insertRow();
-    const head = [ "Foyer", "Type", "Ville", "Locataire", "Propriétaire" ];
+    const head = [ "Type", "Ville", "Locataire", "Propriétaire" ];
     head.forEach(function (item) {
         let cell: HTMLTableCellElement = <HTMLTableCellElement> document.createElement("th");
         cell.innerHTML = item;
