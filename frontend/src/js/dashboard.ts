@@ -50,8 +50,9 @@ function uploadFileToFoyer(context, foyer) {
 function onArrayFiles(id, files) {
     const contextTable = $.id(id);
     contextTable.getElementsByTagName('tbody')[0].innerHTML = '';
-    files.forEach(el => {
-       contextTable.innerHTML += `<tr><td>${el.replace('/files/','')}</td></tr>`;
+
+    new Set(files).forEach(el => {
+        contextTable.innerHTML += `<tr><td>${el.replace('/files/','')}</td></tr>`;
         contextTable.onclick = () => {
             window.open(window.location.href.replace(/\/$/, '') + el, '_blank');
         }
