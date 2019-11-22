@@ -39,6 +39,7 @@ FROM ubuntu as sourcesPackager
 WORKDIR /tozip
 RUN apt update && apt install -y zip tree
 RUN mkdir frontend; mkdir frontend/src; mkdir backend; mkdir backend/src;
+COPY ./Dockerfile .
 COPY ./frontend/src/ ./frontend/src/
 COPY ./frontend/package.json ./frontend
 COPY ./backend/Cargo.toml ./backend
