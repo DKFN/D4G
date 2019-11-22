@@ -42,6 +42,7 @@ RUN mkdir frontend; mkdir frontend/src; mkdir backend; mkdir backend/src;
 COPY ./Dockerfile .
 COPY ./init.sql .
 COPY ./readme.TXT .
+COPY ./prod_kickinstance.sh .
 COPY ./GreenJiranation_Strategie.pdf .
 COPY ./frontend/src/ ./frontend/src/
 COPY ./frontend/package.json ./frontend
