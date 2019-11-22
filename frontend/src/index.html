@@ -111,9 +111,7 @@
                 </div>
                 <br><br>
                 <div class="row">
-                    <div class="column">
-                        1
-                    </div>
+                    <div class="column"></div>
                     <div class="column">
                         <h4>Accès à vos fichiers</h4>
                         <table id="access-files-dashboard">
@@ -231,7 +229,7 @@
                 <header>
                     <h4>Ajout d'un nouveau foyer</h4>
                     <hr>
-                    <form id="register">
+                    <div id="register">
                         <fieldset>
                             <legend>Informations d'identification</legend>
                             <label for="identifiant">Identifiant</label>
@@ -278,19 +276,20 @@
                             <label for=date_construction>Année de construction</label>
                             <input type="number" placeholder="Année de construction" id="date_construction" name="date_construction"/>
                             <label for="n_voie">Numéro de voie</label>
-                            <input type="number" placeholder="Numéro de voie" id="n_voie" name="n_voie"/>
+                            <input type="text" placeholder="Numéro de voie" id="n_voie" name="n_voie"/>
                             <label for="voie">Voie</label>
                             <input type="text" placeholder="Voie" id="voie" name="voie"/>
                             <label for="cp">Code postal</label>
                             <input type="text" placeholder="Code postal" id="cp" name="cp"/>
                             <label for="ville">Ville</label>
                             <input type="text" placeholder="Ville" id="ville" name="ville"/>
+                            <div id="message-register" class="message"></div>
+                            <div>
+                                <button id="send_register" class="button-primary">Envoyer</button>
+                                <a class="button button-clear" action="cancel-modal">Annuler</a>
+                            </div>
                         </fieldset>
-                        <div>
-                            <button id="send_register" class="button-primary">Envoyer</button>
-                            <a class="button button-clear" action="cancel-modal">Annuler</a>
-                        </div>
-                    </form>
+                    </div>
                 </header>
                 <footer>
 

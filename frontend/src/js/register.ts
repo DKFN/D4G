@@ -1,3 +1,4 @@
+import {closeModal, closingModal} from "./modal";
 import { $ } from "./dollard";
 import backend from "./Backend";
 
@@ -5,6 +6,7 @@ function onRegister(context) {
     // Open modal
     const modal = context.getElementsByClassName('modal')[0];
     modal.classList.toggle('active');
+    closingModal(modal);
 }
 
 function displayProprietaire(response) {
@@ -44,21 +46,21 @@ function get_data() {
     const chauffage_select = $.id("chauffage");
     const chauffage = chauffage_select.options[chauffage_select.selectedIndex].value;
     const code_postal = $.id("cp").value;
-    const date_construction = $.id("date_construction").value;
+    const date_construction = Number.parseInt($.id("date_construction").value);
     const fichiers = [];
     const foyer = "";
     const l_type_select = $.id("type_logement");
-    const l_type = l_type_select.options[l_type_select.selectedIndex].value;
-    const locataire_nom = $.id("locataire_nom");
-    const locataire_prenom = $.id("locataire_prenom");
+    const l_type = Number.parseInt(l_type_select.options[l_type_select.selectedIndex].value);
+    const locataire_nom = $.id("locataire_nom").value;
+    const locataire_prenom = $.id("locataire_prenom").value;
     const n_voie = $.id("n_voie").value;
-    const nb_pieces = $.id("nb_pieces").value;
+    const nb_pieces = Number.parseInt($.id("nb_pieces").value);
     const proprietaire_adresse = $.id("proprietaire_adresse").value;
-    const proprietaire_nom = $.id("proprietaire_nom").value;
-    const proprietaire_prenom = $.id("proprietaire_prenom").value;
-    const proprietaire_societe = $.id("proprietaire_entreprise").value;
+    const proprietaire_nom = $.id("proprietaire_nom").value || null;
+    const proprietaire_prenom = $.id("proprietaire_prenom").value || null;
+    const proprietaire_societe = $.id("nom_entreprise").value || null;
     const releves = [];
-    const surface = $.id("surface").value;
+    const surface = Number.parseInt($.id("surface").value);
     const ville = $.id("ville").value;
     const voie1 = $.id("voie").value;
 
@@ -90,4 +92,18 @@ function get_data() {
     backend.register(login, password, logement);
 }
 
-export { onRegister, displayProprietaire, get_data };
+function onResponseRegister(data) {
+    const modal = $.id('page-dashboard-admin').getElementsByClassName('modal')[0];
+    const message = $.id("message-register");
+    message.classList.add('success');
+    message.innerHTML = '<strong>Foyer ajouté avec succès !</strong><br>';
+    setTimeout(closeRegisterModal, 1000, modal, message);
+}
+
+function closeRegisterModal(modal, message) {
+    message.classList.remove('success');
+    message.innerHTML = '';
+    closeModal(modal);
+}
+
+export { onRegister, displayProprietaire, get_data, onResponseRegister };
