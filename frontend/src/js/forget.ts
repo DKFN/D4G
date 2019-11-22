@@ -83,7 +83,7 @@ function getFormData(context) {
  */
 function checkForm(context, withToken = false) {
     const data = getFormData(context);
-    if (data.login.length < 1) {
+    if (!withToken && data.login.length < 1) {
         return {
             status: false,
             message: 'Veuillez remplir le champ login'
