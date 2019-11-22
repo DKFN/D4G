@@ -4,9 +4,8 @@ extern crate lettre;
 extern crate lettre_email;
 extern crate regex;
 
-
 use actix_files::NamedFile;
-use crate::{LoginQuery, InfoLogement};
+use crate::{LoginQuery};
 use postgres::{Connection, TlsMode};
 use serde_json::Value;
 use serde_json::json;
@@ -25,6 +24,14 @@ use futures::future::{Either, err};
 use std::fs;
 use actix_multipart::{Field, Multipart, MultipartError};
 use std::io::Write;
+use crypto::digest::Digest;
+use crypto::sha2::Sha256;
+
+fn hash(password: String) -> String {
+    let mut hasher = Sha256::new();
+    hasher.input_str(password.as_str());
+    hasher.result_str()
+}
 
 pub fn index() -> Result<NamedFile, actix_web::Error> {
     let path = "./public/front/index.html";
@@ -116,7 +123,7 @@ pub fn renew_password(token: String, password: String) -> (String, bool) {
         result = "Impossible de trouver la demande de réinitialisation de mot de passe".to_string();
     } else {
         conn.prepare("UPDATE utilisateur SET password = $1, token = NULL where token=$2").unwrap()
-            .query(&[&password, &token]).unwrap();
+            .query(&[&hash(password), &token]).unwrap();
 
         is_error = false;
         result = "Votre mot de passe a été changé, vous pouvez vous connecter à nouveau".to_string();
@@ -186,7 +193,7 @@ pub fn register(username: String, password: String, logement: Logement) -> Strin
             .query(&[&foyer, &logement.locataire.nom, &logement.locataire.prenom]).unwrap();
 
         conn.prepare("INSERT INTO utilisateur VALUES ($1, $2, $3, $4, $5, $6)").unwrap()
-            .query(&[&foyer, &username, &password, &!username_is_email, &token, &false]).unwrap();
+            .query(&[&foyer, &username, &hash(password), &!username_is_email, &token, &false]).unwrap();
 
         result = "Check your mail to verify your account".to_string();
 
@@ -298,9 +305,9 @@ pub fn login(query: &LoginQuery) -> (Value, bool, bool) {
     let mut conn_ok = false;
     let conn = connect_ddb();
     let rows = conn.prepare("SELECT active, foyer, admin FROM utilisateur where login=$1 AND password=$2").unwrap()
-        .query(&[&query.login, &query.password]).unwrap();
-    if !rows.is_empty() {
+        .query(&[&query.login, &hash(query.password.clone())]).unwrap();
 
+    if !rows.is_empty() {
         let row = rows.get(0);
         let active : bool = row.get(0);
         if active {
