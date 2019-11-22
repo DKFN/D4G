@@ -35,8 +35,10 @@ function onForget() {
     const url = new URL(window.location.href);
     const containerMessage = page.getElementsByClassName('message')[0];
     const followingForm = page.querySelector('[if="nextForm"]');
+    const firstForm = page.querySelector('[if="firstForm"]');
 
     if (url.searchParams.has('token')) {
+        firstForm.classList.add('if-none');
         followingForm.classList.remove('if-none');
         submissionButton.onclick = () => {
             const validate = checkForm(page, true);
@@ -52,6 +54,7 @@ function onForget() {
             return false;
         };
     } else {
+        firstForm.classList.remove('if-none');
         followingForm.classList.add('if-none');
         submissionButton.onclick = () => {
             const validate = checkForm(page);
