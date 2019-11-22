@@ -40,6 +40,9 @@ WORKDIR /tozip
 RUN apt update && apt install -y zip tree
 RUN mkdir frontend; mkdir frontend/src; mkdir backend; mkdir backend/src;
 COPY ./Dockerfile .
+COPY ./init.sql .
+COPY ./readme.TXT .
+COPY ./GreenJiranation_Strategie.pdf .
 COPY ./frontend/src/ ./frontend/src/
 COPY ./frontend/package.json ./frontend
 COPY ./backend/Cargo.toml ./backend
