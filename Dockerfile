@@ -60,6 +60,7 @@ RUN mkdir /public;\
 
 COPY --from=eipOptimizer /index.html /public/front
 # COPY --from=frontend /frontend/dist/ /public/front
+COPY --from=frontend /frontend/src/statics/logo.png /public/uploads/logo.png
 COPY --from=backend /backend/target/release/backend /
 COPY --from=sourcesPackager /tozip/source.zip /public/front
 
