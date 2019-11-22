@@ -6,6 +6,7 @@ function onRegister(context) {
     // Open modal
     const modal = context.getElementsByClassName('modal')[0];
     modal.classList.toggle('active');
+    closingModal(modal);
 }
 
 function displayProprietaire(response) {
@@ -55,9 +56,9 @@ function get_data() {
     const n_voie = $.id("n_voie").value;
     const nb_pieces = Number.parseInt($.id("nb_pieces").value);
     const proprietaire_adresse = $.id("proprietaire_adresse").value;
-    const proprietaire_nom = $.id("proprietaire_nom").value || "";
-    const proprietaire_prenom = $.id("proprietaire_prenom").value || "";
-    const proprietaire_societe = $.id("nom_entreprise").value || "";
+    const proprietaire_nom = $.id("proprietaire_nom").value || null;
+    const proprietaire_prenom = $.id("proprietaire_prenom").value || null;
+    const proprietaire_societe = $.id("nom_entreprise").value || null;
     const releves = [];
     const surface = Number.parseInt($.id("surface").value);
     const ville = $.id("ville").value;
@@ -91,4 +92,18 @@ function get_data() {
     backend.register(login, password, logement);
 }
 
-export { onRegister, displayProprietaire, get_data };
+function onResponseRegister(data) {
+    const modal = $.id('page-dashboard-admin').getElementsByClassName('modal')[0];
+    const message = $.id("message-register");
+    message.classList.add('success');
+    message.innerHTML = '<strong>Foyer ajouté avec succès !</strong><br>';
+    setTimeout(closeRegisterModal, 1000, modal, message);
+}
+
+function closeRegisterModal(modal, message) {
+    message.classList.remove('success');
+    message.innerHTML = '';
+    closeModal(modal);
+}
+
+export { onRegister, displayProprietaire, get_data, onResponseRegister };

@@ -2,6 +2,7 @@ import { onLogin } from "./login";
 import { onDashboard } from "./dashboard";
 import Polling from "./Polling";
 import {onResponseDetail} from "./details";
+import { onResponseRegister } from "./register";
 import { receiveForgetPassword, receiveRenewPassword } from "./forget";
 
 class Backend {
@@ -63,6 +64,10 @@ class Backend {
 
       case "ok-add-releve":
         onResponseDetail(json.data);
+        break;
+
+      case 'register':
+        onResponseRegister(json.data);
         break;
     }
   }
