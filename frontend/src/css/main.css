@@ -46,15 +46,19 @@ main.backgrounded {
 .min-h-lg {
     min-height: 25vmin;
 }
+.warning {
+    color: #cc0f35;
+}
 .message.warning {
     background-color: #feecf0;
     border-color: #f14668;
-    color: #cc0f35;
+}
+.success {
+    color: #257942;
 }
 .message.success {
     background-color: #effaf3;
     border-color: #48c774;
-    color: #257942;
 }
 .message {
     margin: .75rem auto;
@@ -103,11 +107,15 @@ main.visible {
     display: none;
 }
 
-.row .column.table-releve {
+.row .column.table-releve, .row .column .box.table-releve {
     max-height: calc(100vh - 4rem);
     overflow-y: scroll;
     -ms-overflow-y: scroll;
     padding: 2rem;
+}
+
+.row .column .box.table-releve {
+    max-height: calc(80vh);
 }
 
 .table-releve::-webkit-scrollbar-track
@@ -161,15 +169,11 @@ main.visible {
     bottom: 2rem;
 }
 
-.red-text {
-    color: crimson;
-}
-
-.green-text {
-    color: limegreen;
-}
-
-#access-files-dashboard tbody tr {
+#access-files-dashboard tbody tr, .table-releve tr:not(:first-child) {
     color: #3273dc;
     cursor: pointer;
+}
+
+#access-files-dashboard tbody tr:hover, .table-releve tr:not(:first-child):hover {
+    color: #19396e;
 }
